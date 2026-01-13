@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowMate | No-Code Workflow Automation for IT & Business</title>
+    <!-- Tailwind CSS (Styling) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Chart.js (Analytics) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Fonts & Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        
+        /* Custom Gradients */
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        
+        /* Animations */
+        .workflow-node { transition: transform 0.2s; }
+        .workflow-node:hover { transform: translateY(-5px); }
+        .connector-line { width: 2px; height: 30px; background: #94a3b8; margin: 0 auto; }
+        .tech-card:hover { border-color: #3b82f6; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <i class="fas fa-project-diagram text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight text-slate-900">FlowMate</span>
+                </div>
+                <div class="hidden md:flex space-x-8 font-medium text-slate-600">
+                    <a href="#how-it-works" class="hover:text-blue-600 transition">How it Works</a>
+                    <a href="#features" class="hover:text-blue-600 transition">Features</a>
+                    <a href="#tech-stack" class="hover:text-blue-600 transition">Tech Stack</a>
+                    <a href="#ai" class="hover:text-blue-600 transition">AI Engine</a>
+                </div>
+                <div>
+                    <a href="#contact" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition shadow-sm">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-20 pb-16 gradient-bg text-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Hero Text -->
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-300 text-sm font-medium mb-6">
+                        <span class="flex h-2 w-2 rounded-full bg-blue-400"></span>
+                        New: AI-Assisted Workflow Suggestions
+                    </div>
+                    <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+                        Automate Workflows <br><span class="text-blue-400">Without the Code.</span>
+                    </h1>
+                    <p class="text-xl text-slate-300 mb-8 max-w-lg">
+                        Empower your L1/L2 support teams and business analysts to automate repetitive tasks in minutes. The enterprise-grade engine for modern operations.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg flex items-center gap-2 transition">
+                            Build Your First Flow <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button class="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold text-lg border border-slate-700 transition">
+                            Watch Demo
+                        </button>
+                    </div>
+                </div>
+                <!-- Hero Visual (Workflow Mockup) -->
+                <div class="relative">
+                    <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 shadow-2xl">
+                        <div class="flex items-center gap-2 mb-6 border-b border-slate-700 pb-4">
+                            <div class="flex gap-1.5">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <span class="ml-4 text-slate-400 text-sm italic">New Hire Onboarding Workflow</span>
+                        </div>
+                        <div class="space-y-4">
+                            <!-- Node 1 -->
+                            <div class="workflow-node bg-blue-600 p-4 rounded-xl border border-blue-400 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-bolt text-blue-200"></i>
+                                    <div>
+                                        <p class="text-xs text-blue-200 uppercase font-bold">Trigger</p>
+                                        <p class="font-medium">New Ticket in Jira</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-check-circle text-blue-200"></i>
+                            </div>
+                            <div class="connector-line"></div>
+                            <!-- Node 2 -->
+                            <div class="workflow-node bg-slate-700 p-4 rounded-xl border border-slate-600 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-robot text-purple-400"></i>
+                                    <div>
+                                        <p class="text-xs text-purple-400 uppercase font-bold">AI Agent</p>
+                                        <p class="font-medium">Analyze Sentiment & Intent</p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-600 text-[10px] px-2 py-0.5 rounded">Hugging Face API</div>
+                            </div>
+                            <div class="connector-line"></div>
+                            <!-- Node 3 (Branch) -->
+                            <div class="grid grid-cols-2 gap-4 relative">
+                                <div class="workflow-node bg-slate-700 p-4 rounded-xl border border-slate-600">
+                                    <p class="text-xs text-emerald-400 uppercase font-bold mb-1">Success</p>
+                                    <p class="text-sm">Slack Alert</p>
+                                </div>
+                                <div class="workflow-node bg-slate-700 p-4 rounded-xl border border-slate-600">
+                                    <p class="text-xs text-red-400 uppercase font-bold mb-1">Failure</p>
+                                    <p class="text-sm">Retry Log</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <section class="py-12 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-between items-center gap-8 opacity-60 grayscale">
+                <span class="text-2xl font-bold">REDUCE OPS WORK BY 40%</span>
+                <span class="text-2xl font-bold">L1/L2 PRODUCTIVITY +65%</span>
+                <span class="text-2xl font-bold">0 CODE REQUIRED</span>
+                <span class="text-2xl font-bold">SECURE & SCALABLE</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how-it-works" class="py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+            <h2 class="text-4xl font-bold text-slate-900 mb-4">How FlowMate Works</h2>
+            <p class="text-slate-600 max-w-2xl mx-auto text-lg">Simplify complex business logic into three easy steps. No deployment hurdles, just instant automation.</p>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="text-center group">
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-6 mx-auto group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">1. Drag & Drop</h3>
+                    <p class="text-slate-600">Choose from hundreds of pre-built triggers and actions. Connect them visually on our intuitive canvas.</p>
+                </div>
+                <div class="text-center group">
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-6 mx-auto group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">2. Smart Logic</h3>
+                    <p class="text-slate-600">Add conditional branches, loops, and AI-powered data processing to handle complex enterprise scenarios.</p>
+                </div>
+                <div class="text-center group">
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-6 mx-auto group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">3. Deploy & Monitor</h3>
+                    <p class="text-slate-600">Publish your workflow with one click. Track real-time execution logs and success metrics in the dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-24 bg-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-16">
+                <h2 class="text-4xl font-bold text-slate-900 mb-4">Enterprise Features</h2>
+                <p class="text-slate-600">Everything your IT Operations team needs to scale automation safely.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-clock text-blue-600 text-2xl mb-4"></i>
+                    <h4 class="font-bold mb-2">Timed Triggers</h4>
+                    <p class="text-sm text-slate-500">Schedule workflows by hour, day, or custom cron expressions.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-shield-alt text-blue-600 text-2xl mb-4"></i>
+                    <h4 class="font-bold mb-2">Error Handling</h4>
+                    <p class="text-sm text-slate-500">Built-in retry mechanisms and dead-letter queues for robust execution.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-layer-group text-blue-600 text-2xl mb-4"></i>
+                    <h4 class="font-bold mb-2">Reusable Templates</h4>
+                    <p class="text-sm text-slate-500">Save common logic as reusable components across your organization.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-lock text-blue-600 text-2xl mb-4"></i>
+                    <h4 class="font-bold mb-2">Secure API Auth</h4>
+                    <p class="text-sm text-slate-500">Native support for OAuth2, API Keys, and SAML integrations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Engine Section -->
+    <section id="ai" class="py-24 gradient-bg text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1">
+                    <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-700">
+                        <div class="mb-4">
+                            <label class="text-xs text-slate-400 font-bold uppercase">Prompt FlowMate AI</label>
+                            <div class="mt-2 flex gap-2">
+                                <div class="flex-1 bg-slate-800 border border-slate-700 p-3 rounded-lg text-sm italic">
+                                    "Build a flow that alerts the #security channel on Slack whenever an unauthorized login attempt is detected in the logs."
+                                </div>
+                                <button class="bg-blue-600 p-3 rounded-lg"><i class="fas fa-magic"></i></button>
+                            </div>
+                        </div>
+                        <div class="space-y-3 opacity-80">
+                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs">Generating Workflow Architecture...</div>
+                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs border-l-4 border-blue-500">Step 1: Log Event Webhook</div>
+                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs border-l-4 border-blue-500">Step 2: Logic Filter (status != 200)</div>
+                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs border-l-4 border-blue-500">Step 3: Slack Notification</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2">
+                    <h2 class="text-4xl font-bold mb-6">Built with Intelligence</h2>
+                    <p class="text-slate-300 text-lg mb-8">
+                        FlowMate integrates with <strong>Hugging Face API</strong> to bridge the gap between human intent and automated logic.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-blue-400 mt-1"></i>
+                            <span><strong>Natural Language Processing:</strong> Convert text descriptions directly into functional workflows.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-blue-400 mt-1"></i>
+                            <span><strong>Gap Detection:</strong> AI auto-detects missing logic steps or potential execution bottlenecks.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-blue-400 mt-1"></i>
+                            <span><strong>Smart Recommendations:</strong> Suggests the next most logical node based on community patterns.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack (CRITICAL SECTION) -->
+    <section id="tech-stack" class="py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+            <h2 class="text-4xl font-bold text-slate-900 mb-4">Scalable Architecture</h2>
+            <p class="text-slate-600">Built on a rock-solid stack designed for extensibility and performance.</p>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fab fa-react text-blue-500 text-3xl mb-3"></i>
+                    <h5 class="font-bold">React.js</h5>
+                    <p class="text-xs text-slate-500 mt-1">Responsive UI</p>
+                </div>
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fab fa-node-js text-emerald-500 text-3xl mb-3"></i>
+                    <h5 class="font-bold">Node.js</h5>
+                    <p class="text-xs text-slate-500 mt-1">Orchestration API</p>
+                </div>
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fab fa-python text-yellow-500 text-3xl mb-3"></i>
+                    <h5 class="font-bold">Python</h5>
+                    <p class="text-xs text-slate-500 mt-1">Automation Logic</p>
+                </div>
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fas fa-database text-green-600 text-3xl mb-3"></i>
+                    <h5 class="font-bold">MongoDB</h5>
+                    <p class="text-xs text-slate-500 mt-1">Scalable Storage</p>
+                </div>
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fas fa-brain text-purple-600 text-3xl mb-3"></i>
+                    <h5 class="font-bold">Hugging Face</h5>
+                    <p class="text-xs text-slate-500 mt-1">AI Engine</p>
+                </div>
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fab fa-docker text-blue-400 text-3xl mb-3"></i>
+                    <h5 class="font-bold">Docker</h5>
+                    <p class="text-xs text-slate-500 mt-1">Containerization</p>
+                </div>
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fas fa-vial text-red-500 text-3xl mb-3"></i>
+                    <h5 class="font-bold">Jest & Selenium</h5>
+                    <p class="text-xs text-slate-500 mt-1">E2E Testing</p>
+                </div>
+                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
+                    <i class="fab fa-github text-slate-900 text-3xl mb-3"></i>
+                    <h5 class="font-bold">CI/CD</h5>
+                    <p class="text-xs text-slate-500 mt-1">GitHub Actions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Dashboard Mockup -->
+    <section class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+                <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold">Execution Monitoring</h3>
+                        <p class="text-slate-500">Real-time performance of your active workflows.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">99.9% Success</span>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <!-- Canvas for Chart.js -->
+                    <canvas id="workflowChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center mb-16">Designed for Every Team</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- IT Ops Use Case -->
+                <div class="bg-slate-50 p-10 rounded-3xl border border-slate-100">
+                    <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">IT Support & Ops</h4>
+                    <p class="text-slate-600 mb-6">Automate password resets, ticket triaging, and server health checks. Let FlowMate handle the L1 noise so your team can focus on architecture.</p>
+                    <ul class="space-y-2 text-slate-700">
+                        <li><i class="fas fa-arrow-right text-blue-500 mr-2"></i> Auto-close inactive tickets</li>
+                        <li><i class="fas fa-arrow-right text-blue-500 mr-2"></i> Provision AWS resources via approval</li>
+                        <li><i class="fas fa-arrow-right text-blue-500 mr-2"></i> Monitor SaaS spend automatically</li>
+                    </ul>
+                </div>
+                <!-- Business Use Case -->
+                <div class="bg-slate-50 p-10 rounded-3xl border border-slate-100">
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Business Workflows</h4>
+                    <p class="text-slate-600 mb-6">Enable HR, Marketing, and Sales teams to build their own tools. No more waiting 6 months for a developer to help with simple data moves.</p>
+                    <ul class="space-y-2 text-slate-700">
+                        <li><i class="fas fa-arrow-right text-indigo-500 mr-2"></i> Streamline employee onboarding</li>
+                        <li><i class="fas fa-arrow-right text-indigo-500 mr-2"></i> Sync CRM data with Google Sheets</li>
+                        <li><i class="fas fa-arrow-right text-indigo-500 mr-2"></i> Automate invoice approval chains</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section id="contact" class="py-24">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center bg-blue-600 rounded-[3rem] py-16 text-white shadow-2xl shadow-blue-200">
+            <h2 class="text-4xl font-bold mb-6">Ready to Automate?</h2>
+            <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">Join 500+ teams who have reclaimed 30% of their workday with FlowMate.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <input type="email" placeholder="Enter your work email" class="px-6 py-4 rounded-2xl text-slate-900 w-full sm:w-80 focus:ring-4 focus:ring-blue-400 outline-none">
+                <button class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-slate-800 transition">Get Free Access</button>
+            </div>
+            <p class="mt-6 text-sm text-blue-200">No credit card required • Enterprise trial available</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-400 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="bg-blue-600 p-2 rounded-lg">
+                            <i class="fas fa-project-diagram text-white text-lg"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">FlowMate</span>
+                    </div>
+                    <p class="max-w-sm">The foundation-level workflow engine for modern enterprises. Lightweight, customizable, and developer-friendly automation for everyone.</p>
+                </div>
+                <div>
+                    <h5 class="text-white font-bold mb-4">Product</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-blue-400">Workflow Builder</a></li>
+                        <li><a href="#" class="hover:text-blue-400">AI Logic</a></li>
+                        <li><a href="#" class="hover:text-blue-400">Integrations</a></li>
+                        <li><a href="#" class="hover:text-blue-400">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-white font-bold mb-4">Resources</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-blue-400">Documentation</a></li>
+                        <li><a href="#" class="hover:text-blue-400">API Reference</a></li>
+                        <li><a href="#" class="hover:text-blue-400">Tutorials</a></li>
+                        <li><a href="#" class="hover:text-blue-400">Community</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <p>&copy; 2023 FlowMate Automation Inc. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Chart.js and Logic -->
+    <script>
+        // Initialize Workflow Chart using Chart.js
+        const ctx = document.getElementById('workflowChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+                datasets: [{
+                    label: 'Successful Executions',
+                    data: [120, 95, 450, 820, 760, 540, 210],
+                    borderColor: '#3b82f6', // Blue-500
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Failed Executions',
+                    data: [2, 1, 5, 8, 4, 3, 2],
+                    borderColor: '#ef4444', // Red-500
+                    borderDash: [5, 5],
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
