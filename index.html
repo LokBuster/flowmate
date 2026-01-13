@@ -3,464 +3,1207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowMate | No-Code Workflow Automation for IT & Business</title>
-    <!-- Tailwind CSS (Styling) -->
+    <title>FlowMate | Workflow Automation Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Chart.js (Analytics) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome (Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Custom Fonts & Styles */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f3f4f6; }
         
-        /* Custom Gradients */
-        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        /* Sidebar */
+        .sidebar { width: 260px; transition: width 0.3s; }
+        .sidebar-item:hover { background: #e0e7ff; }
+        .sidebar-item.active { background: #4f46e5; color: white; }
+        
+        /* Flow Builder */
+        .flow-node { 
+            transition: all 0.2s; 
+            cursor: pointer;
+        }
+        .flow-node:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+        }
+        .connector { 
+            width: 3px; 
+            height: 40px; 
+            background: linear-gradient(to bottom, #6366f1, #8b5cf6); 
+            margin: 0 auto; 
+            position: relative;
+        }
+        .connector::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #8b5cf6;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        /* Cards */
+        .flow-card:hover { border-color: #6366f1; }
+        
+        /* Status badges */
+        .status-success { background: #dcfce7; color: #166534; }
+        .status-failed { background: #fee2e2; color: #991b1b; }
+        .status-running { background: #dbeafe; color: #1e40af; }
         
         /* Animations */
-        .workflow-node { transition: transform 0.2s; }
-        .workflow-node:hover { transform: translateY(-5px); }
-        .connector-line { width: 2px; height: 30px; background: #94a3b8; margin: 0 auto; }
-        .tech-card:hover { border-color: #3b82f6; }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse-dot { animation: pulse-dot 2s infinite; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in { animation: slideIn 0.3s ease-out; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-
-    <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
-                    <div class="bg-blue-600 p-2 rounded-lg">
-                        <i class="fas fa-project-diagram text-white text-xl"></i>
+<body class="bg-gray-100">
+    <div id="app" class="flex h-screen">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar bg-white border-r border-gray-200 flex flex-col">
+            <!-- Logo -->
+            <div class="p-5 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-lg"></i>
                     </div>
-                    <span class="text-2xl font-bold tracking-tight text-slate-900">FlowMate</span>
-                </div>
-                <div class="hidden md:flex space-x-8 font-medium text-slate-600">
-                    <a href="#how-it-works" class="hover:text-blue-600 transition">How it Works</a>
-                    <a href="#features" class="hover:text-blue-600 transition">Features</a>
-                    <a href="#tech-stack" class="hover:text-blue-600 transition">Tech Stack</a>
-                    <a href="#ai" class="hover:text-blue-600 transition">AI Engine</a>
-                </div>
-                <div>
-                    <a href="#contact" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition shadow-sm">Get Started</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="pt-20 pb-16 gradient-bg text-white overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Hero Text -->
-                <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-300 text-sm font-medium mb-6">
-                        <span class="flex h-2 w-2 rounded-full bg-blue-400"></span>
-                        New: AI-Assisted Workflow Suggestions
-                    </div>
-                    <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-                        Automate Workflows <br><span class="text-blue-400">Without the Code.</span>
-                    </h1>
-                    <p class="text-xl text-slate-300 mb-8 max-w-lg">
-                        Empower your L1/L2 support teams and business analysts to automate repetitive tasks in minutes. The enterprise-grade engine for modern operations.
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <button class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg flex items-center gap-2 transition">
-                            Build Your First Flow <i class="fas fa-arrow-right"></i>
-                        </button>
-                        <button class="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold text-lg border border-slate-700 transition">
-                            Watch Demo
-                        </button>
-                    </div>
-                </div>
-                <!-- Hero Visual (Workflow Mockup) -->
-                <div class="relative">
-                    <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 shadow-2xl">
-                        <div class="flex items-center gap-2 mb-6 border-b border-slate-700 pb-4">
-                            <div class="flex gap-1.5">
-                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                            </div>
-                            <span class="ml-4 text-slate-400 text-sm italic">New Hire Onboarding Workflow</span>
-                        </div>
-                        <div class="space-y-4">
-                            <!-- Node 1 -->
-                            <div class="workflow-node bg-blue-600 p-4 rounded-xl border border-blue-400 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-bolt text-blue-200"></i>
-                                    <div>
-                                        <p class="text-xs text-blue-200 uppercase font-bold">Trigger</p>
-                                        <p class="font-medium">New Ticket in Jira</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-check-circle text-blue-200"></i>
-                            </div>
-                            <div class="connector-line"></div>
-                            <!-- Node 2 -->
-                            <div class="workflow-node bg-slate-700 p-4 rounded-xl border border-slate-600 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-robot text-purple-400"></i>
-                                    <div>
-                                        <p class="text-xs text-purple-400 uppercase font-bold">AI Agent</p>
-                                        <p class="font-medium">Analyze Sentiment & Intent</p>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-600 text-[10px] px-2 py-0.5 rounded">Hugging Face API</div>
-                            </div>
-                            <div class="connector-line"></div>
-                            <!-- Node 3 (Branch) -->
-                            <div class="grid grid-cols-2 gap-4 relative">
-                                <div class="workflow-node bg-slate-700 p-4 rounded-xl border border-slate-600">
-                                    <p class="text-xs text-emerald-400 uppercase font-bold mb-1">Success</p>
-                                    <p class="text-sm">Slack Alert</p>
-                                </div>
-                                <div class="workflow-node bg-slate-700 p-4 rounded-xl border border-slate-600">
-                                    <p class="text-xs text-red-400 uppercase font-bold mb-1">Failure</p>
-                                    <p class="text-sm">Retry Log</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Stats Bar -->
-    <section class="py-12 bg-white border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-wrap justify-between items-center gap-8 opacity-60 grayscale">
-                <span class="text-2xl font-bold">REDUCE OPS WORK BY 40%</span>
-                <span class="text-2xl font-bold">L1/L2 PRODUCTIVITY +65%</span>
-                <span class="text-2xl font-bold">0 CODE REQUIRED</span>
-                <span class="text-2xl font-bold">SECURE & SCALABLE</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- How it Works -->
-    <section id="how-it-works" class="py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
-            <h2 class="text-4xl font-bold text-slate-900 mb-4">How FlowMate Works</h2>
-            <p class="text-slate-600 max-w-2xl mx-auto text-lg">Simplify complex business logic into three easy steps. No deployment hurdles, just instant automation.</p>
-        </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-3 gap-12">
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-6 mx-auto group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                        <i class="fas fa-mouse-pointer"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">1. Drag & Drop</h3>
-                    <p class="text-slate-600">Choose from hundreds of pre-built triggers and actions. Connect them visually on our intuitive canvas.</p>
-                </div>
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-6 mx-auto group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                        <i class="fas fa-microchip"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">2. Smart Logic</h3>
-                    <p class="text-slate-600">Add conditional branches, loops, and AI-powered data processing to handle complex enterprise scenarios.</p>
-                </div>
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-6 mx-auto group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">3. Deploy & Monitor</h3>
-                    <p class="text-slate-600">Publish your workflow with one click. Track real-time execution logs and success metrics in the dashboard.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Grid -->
-    <section id="features" class="py-24 bg-slate-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-16">
-                <h2 class="text-4xl font-bold text-slate-900 mb-4">Enterprise Features</h2>
-                <p class="text-slate-600">Everything your IT Operations team needs to scale automation safely.</p>
-            </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
-                    <i class="fas fa-clock text-blue-600 text-2xl mb-4"></i>
-                    <h4 class="font-bold mb-2">Timed Triggers</h4>
-                    <p class="text-sm text-slate-500">Schedule workflows by hour, day, or custom cron expressions.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
-                    <i class="fas fa-shield-alt text-blue-600 text-2xl mb-4"></i>
-                    <h4 class="font-bold mb-2">Error Handling</h4>
-                    <p class="text-sm text-slate-500">Built-in retry mechanisms and dead-letter queues for robust execution.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
-                    <i class="fas fa-layer-group text-blue-600 text-2xl mb-4"></i>
-                    <h4 class="font-bold mb-2">Reusable Templates</h4>
-                    <p class="text-sm text-slate-500">Save common logic as reusable components across your organization.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition">
-                    <i class="fas fa-lock text-blue-600 text-2xl mb-4"></i>
-                    <h4 class="font-bold mb-2">Secure API Auth</h4>
-                    <p class="text-sm text-slate-500">Native support for OAuth2, API Keys, and SAML integrations.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- AI Engine Section -->
-    <section id="ai" class="py-24 gradient-bg text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="order-2 lg:order-1">
-                    <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-700">
-                        <div class="mb-4">
-                            <label class="text-xs text-slate-400 font-bold uppercase">Prompt FlowMate AI</label>
-                            <div class="mt-2 flex gap-2">
-                                <div class="flex-1 bg-slate-800 border border-slate-700 p-3 rounded-lg text-sm italic">
-                                    "Build a flow that alerts the #security channel on Slack whenever an unauthorized login attempt is detected in the logs."
-                                </div>
-                                <button class="bg-blue-600 p-3 rounded-lg"><i class="fas fa-magic"></i></button>
-                            </div>
-                        </div>
-                        <div class="space-y-3 opacity-80">
-                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs">Generating Workflow Architecture...</div>
-                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs border-l-4 border-blue-500">Step 1: Log Event Webhook</div>
-                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs border-l-4 border-blue-500">Step 2: Logic Filter (status != 200)</div>
-                            <div class="h-10 bg-slate-800 rounded flex items-center px-4 text-xs border-l-4 border-blue-500">Step 3: Slack Notification</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="order-1 lg:order-2">
-                    <h2 class="text-4xl font-bold mb-6">Built with Intelligence</h2>
-                    <p class="text-slate-300 text-lg mb-8">
-                        FlowMate integrates with <strong>Hugging Face API</strong> to bridge the gap between human intent and automated logic.
-                    </p>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-check-circle text-blue-400 mt-1"></i>
-                            <span><strong>Natural Language Processing:</strong> Convert text descriptions directly into functional workflows.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-check-circle text-blue-400 mt-1"></i>
-                            <span><strong>Gap Detection:</strong> AI auto-detects missing logic steps or potential execution bottlenecks.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-check-circle text-blue-400 mt-1"></i>
-                            <span><strong>Smart Recommendations:</strong> Suggests the next most logical node based on community patterns.</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tech Stack (CRITICAL SECTION) -->
-    <section id="tech-stack" class="py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
-            <h2 class="text-4xl font-bold text-slate-900 mb-4">Scalable Architecture</h2>
-            <p class="text-slate-600">Built on a rock-solid stack designed for extensibility and performance.</p>
-        </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fab fa-react text-blue-500 text-3xl mb-3"></i>
-                    <h5 class="font-bold">React.js</h5>
-                    <p class="text-xs text-slate-500 mt-1">Responsive UI</p>
-                </div>
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fab fa-node-js text-emerald-500 text-3xl mb-3"></i>
-                    <h5 class="font-bold">Node.js</h5>
-                    <p class="text-xs text-slate-500 mt-1">Orchestration API</p>
-                </div>
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fab fa-python text-yellow-500 text-3xl mb-3"></i>
-                    <h5 class="font-bold">Python</h5>
-                    <p class="text-xs text-slate-500 mt-1">Automation Logic</p>
-                </div>
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fas fa-database text-green-600 text-3xl mb-3"></i>
-                    <h5 class="font-bold">MongoDB</h5>
-                    <p class="text-xs text-slate-500 mt-1">Scalable Storage</p>
-                </div>
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fas fa-brain text-purple-600 text-3xl mb-3"></i>
-                    <h5 class="font-bold">Hugging Face</h5>
-                    <p class="text-xs text-slate-500 mt-1">AI Engine</p>
-                </div>
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fab fa-docker text-blue-400 text-3xl mb-3"></i>
-                    <h5 class="font-bold">Docker</h5>
-                    <p class="text-xs text-slate-500 mt-1">Containerization</p>
-                </div>
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fas fa-vial text-red-500 text-3xl mb-3"></i>
-                    <h5 class="font-bold">Jest & Selenium</h5>
-                    <p class="text-xs text-slate-500 mt-1">E2E Testing</p>
-                </div>
-                <div class="tech-card border border-slate-200 p-6 rounded-xl transition text-center">
-                    <i class="fab fa-github text-slate-900 text-3xl mb-3"></i>
-                    <h5 class="font-bold">CI/CD</h5>
-                    <p class="text-xs text-slate-500 mt-1">GitHub Actions</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Analytics Dashboard Mockup -->
-    <section class="py-24 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
-                <div class="p-8 border-b border-slate-100 flex justify-between items-center">
                     <div>
-                        <h3 class="text-2xl font-bold">Execution Monitoring</h3>
-                        <p class="text-slate-500">Real-time performance of your active workflows.</p>
+                        <h1 class="text-xl font-bold text-gray-900">FlowMate</h1>
+                        <p class="text-xs text-gray-500">Workflow Automation</p>
                     </div>
-                    <div class="flex gap-2">
-                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">99.9% Success</span>
-                    </div>
-                </div>
-                <div class="p-8">
-                    <!-- Canvas for Chart.js -->
-                    <canvas id="workflowChart" height="100"></canvas>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Use Cases -->
-    <section class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-4xl font-bold text-center mb-16">Designed for Every Team</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- IT Ops Use Case -->
-                <div class="bg-slate-50 p-10 rounded-3xl border border-slate-100">
-                    <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center mb-6">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h4 class="text-2xl font-bold mb-4">IT Support & Ops</h4>
-                    <p class="text-slate-600 mb-6">Automate password resets, ticket triaging, and server health checks. Let FlowMate handle the L1 noise so your team can focus on architecture.</p>
-                    <ul class="space-y-2 text-slate-700">
-                        <li><i class="fas fa-arrow-right text-blue-500 mr-2"></i> Auto-close inactive tickets</li>
-                        <li><i class="fas fa-arrow-right text-blue-500 mr-2"></i> Provision AWS resources via approval</li>
-                        <li><i class="fas fa-arrow-right text-blue-500 mr-2"></i> Monitor SaaS spend automatically</li>
-                    </ul>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <button onclick="showView('dashboard')" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left" data-view="dashboard">
+                            <i class="fas fa-th-large w-5"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView('my-flows')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="my-flows">
+                            <i class="fas fa-project-diagram w-5"></i>
+                            <span class="font-medium">My Flows</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView('create-flow')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="create-flow">
+                            <i class="fas fa-plus-circle w-5"></i>
+                            <span class="font-medium">Create Flow</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView('history')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="history">
+                            <i class="fas fa-history w-5"></i>
+                            <span class="font-medium">Run History</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView('analytics')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="analytics">
+                            <i class="fas fa-chart-bar w-5"></i>
+                            <span class="font-medium">Analytics</span>
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <p class="text-xs text-gray-400 uppercase font-semibold mb-3 px-4">AI Features</p>
+                    <button onclick="showView('ai-assistant')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="ai-assistant">
+                        <i class="fas fa-robot w-5 text-purple-500"></i>
+                        <span class="font-medium">AI Assistant</span>
+                        <span class="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">New</span>
+                    </button>
                 </div>
-                <!-- Business Use Case -->
-                <div class="bg-slate-50 p-10 rounded-3xl border border-slate-100">
-                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center mb-6">
-                        <i class="fas fa-briefcase"></i>
+            </nav>
+            
+            <!-- User -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-indigo-600"></i>
                     </div>
-                    <h4 class="text-2xl font-bold mb-4">Business Workflows</h4>
-                    <p class="text-slate-600 mb-6">Enable HR, Marketing, and Sales teams to build their own tools. No more waiting 6 months for a developer to help with simple data moves.</p>
-                    <ul class="space-y-2 text-slate-700">
-                        <li><i class="fas fa-arrow-right text-indigo-500 mr-2"></i> Streamline employee onboarding</li>
-                        <li><i class="fas fa-arrow-right text-indigo-500 mr-2"></i> Sync CRM data with Google Sheets</li>
-                        <li><i class="fas fa-arrow-right text-indigo-500 mr-2"></i> Automate invoice approval chains</li>
-                    </ul>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900">Demo User</p>
+                        <p class="text-xs text-gray-500">Free Plan</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-cog"></i>
+                    </button>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Contact CTA -->
-    <section id="contact" class="py-24">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center bg-blue-600 rounded-[3rem] py-16 text-white shadow-2xl shadow-blue-200">
-            <h2 class="text-4xl font-bold mb-6">Ready to Automate?</h2>
-            <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">Join 500+ teams who have reclaimed 30% of their workday with FlowMate.</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <input type="email" placeholder="Enter your work email" class="px-6 py-4 rounded-2xl text-slate-900 w-full sm:w-80 focus:ring-4 focus:ring-blue-400 outline-none">
-                <button class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-slate-800 transition">Get Free Access</button>
-            </div>
-            <p class="mt-6 text-sm text-blue-200">No credit card required • Enterprise trial available</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-slate-950 text-slate-400 py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
-                <div class="col-span-2">
-                    <div class="flex items-center gap-2 mb-6">
-                        <div class="bg-blue-600 p-2 rounded-lg">
-                            <i class="fas fa-project-diagram text-white text-lg"></i>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 id="page-title" class="text-2xl font-bold text-gray-900">Dashboard</h2>
+                        <p id="page-subtitle" class="text-gray-500 text-sm">Welcome back! Here's your automation overview.</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="showView('create-flow')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition shadow-lg shadow-indigo-200">
+                            <i class="fas fa-plus"></i>
+                            <span>New Flow</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content Area -->
+            <div class="p-8">
+                
+                <!-- Dashboard View -->
+                <div id="view-dashboard" class="view-content">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-project-diagram text-indigo-600 text-xl"></i>
+                                </div>
+                                <span class="text-green-500 text-sm font-medium">+12%</span>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900" id="stat-total-flows">0</p>
+                            <p class="text-gray-500 text-sm">Total Flows</p>
                         </div>
-                        <span class="text-xl font-bold text-white">FlowMate</span>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                                </div>
+                                <span class="text-green-500 text-sm font-medium">99.2%</span>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900" id="stat-successful">0</p>
+                            <p class="text-gray-500 text-sm">Successful Runs</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                                </div>
+                                <span class="text-red-500 text-sm font-medium">-5%</span>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900" id="stat-failed">0</p>
+                            <p class="text-gray-500 text-sm">Failed Runs</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-clock text-purple-600 text-xl"></i>
+                                </div>
+                                <span class="pulse-dot w-2 h-2 bg-green-500 rounded-full"></span>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900" id="stat-active">0</p>
+                            <p class="text-gray-500 text-sm">Active Flows</p>
+                        </div>
                     </div>
-                    <p class="max-w-sm">The foundation-level workflow engine for modern enterprises. Lightweight, customizable, and developer-friendly automation for everyone.</p>
+                    
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Execution Trends</h3>
+                            <canvas id="executionChart" height="200"></canvas>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Flow Status Distribution</h3>
+                            <canvas id="statusChart" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-2xl border border-gray-200">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">Recent Activity</h3>
+                        </div>
+                        <div id="recent-activity" class="divide-y divide-gray-100">
+                            <div class="p-6 text-center text-gray-500">
+                                <i class="fas fa-inbox text-4xl mb-3 text-gray-300"></i>
+                                <p>No recent activity. Create your first flow!</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <h5 class="text-white font-bold mb-4">Product</h5>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-blue-400">Workflow Builder</a></li>
-                        <li><a href="#" class="hover:text-blue-400">AI Logic</a></li>
-                        <li><a href="#" class="hover:text-blue-400">Integrations</a></li>
-                        <li><a href="#" class="hover:text-blue-400">Pricing</a></li>
-                    </ul>
+                
+                <!-- My Flows View -->
+                <div id="view-my-flows" class="view-content hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <input type="text" placeholder="Search flows..." class="pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl w-64 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                            <select class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                                <option>All Status</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="flows-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Flows will be rendered here -->
+                    </div>
+                    
+                    <div id="empty-flows" class="text-center py-16">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-folder-open text-3xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">No flows yet</h3>
+                        <p class="text-gray-500 mb-6">Create your first automated workflow to get started.</p>
+                        <button onclick="showView('create-flow')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold">
+                            <i class="fas fa-plus mr-2"></i>Create Your First Flow
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <h5 class="text-white font-bold mb-4">Resources</h5>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-blue-400">Documentation</a></li>
-                        <li><a href="#" class="hover:text-blue-400">API Reference</a></li>
-                        <li><a href="#" class="hover:text-blue-400">Tutorials</a></li>
-                        <li><a href="#" class="hover:text-blue-400">Community</a></li>
-                    </ul>
+                
+                <!-- Create Flow View -->
+                <div id="view-create-flow" class="view-content hidden">
+                    <div class="max-w-4xl mx-auto">
+                        <!-- Flow Name -->
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Flow Name</label>
+                            <input type="text" id="flow-name" placeholder="e.g., Daily Report Automation" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg">
+                        </div>
+                        
+                        <!-- Visual Flow Builder -->
+                        <div class="bg-white rounded-2xl p-8 border border-gray-200 mb-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-6 text-center">Build Your Flow</h3>
+                            
+                            <div class="flex flex-col items-center">
+                                
+                                <!-- WHEN (Trigger) -->
+                                <div class="flow-node w-full max-w-md bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-5 shadow-lg" onclick="openTriggerModal()">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-bolt text-2xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xs uppercase font-bold opacity-80">When</p>
+                                            <p id="trigger-display" class="text-lg font-semibold">Click to select trigger...</p>
+                                        </div>
+                                        <i class="fas fa-chevron-right opacity-60"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="connector"></div>
+                                
+                                <!-- IF (Condition) - Optional -->
+                                <div class="flow-node w-full max-w-md bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl p-5 shadow-lg" onclick="openConditionModal()">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-code-branch text-2xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xs uppercase font-bold opacity-80">If (Optional)</p>
+                                            <p id="condition-display" class="text-lg font-semibold">Add a condition...</p>
+                                        </div>
+                                        <i class="fas fa-chevron-right opacity-60"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="connector"></div>
+                                
+                                <!-- DO (Action) -->
+                                <div class="flow-node w-full max-w-md bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-5 shadow-lg" onclick="openActionModal()">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-play text-2xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xs uppercase font-bold opacity-80">Do</p>
+                                            <p id="action-display" class="text-lg font-semibold">Click to select action...</p>
+                                        </div>
+                                        <i class="fas fa-chevron-right opacity-60"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Save Button -->
+                        <div class="flex justify-center gap-4">
+                            <button onclick="saveFlow()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-indigo-200 flex items-center gap-2 transition">
+                                <i class="fas fa-save"></i>
+                                Save Flow
+                            </button>
+                            <button onclick="testFlow()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-2 transition">
+                                <i class="fas fa-play"></i>
+                                Test Run
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- History View -->
+                <div id="view-history" class="view-content hidden">
+                    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-gray-900">Execution History</h3>
+                            <button onclick="clearHistory()" class="text-red-500 hover:text-red-600 text-sm font-medium">
+                                <i class="fas fa-trash mr-1"></i>Clear All
+                            </button>
+                        </div>
+                        <div id="history-list" class="divide-y divide-gray-100">
+                            <div class="p-8 text-center text-gray-500">
+                                <i class="fas fa-clock text-4xl mb-3 text-gray-300"></i>
+                                <p>No execution history yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics View -->
+                <div id="view-analytics" class="view-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Weekly Performance</h3>
+                            <canvas id="weeklyChart" height="250"></canvas>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Success Rate by Flow</h3>
+                            <canvas id="successRateChart" height="250"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Hourly Execution Heatmap</h3>
+                        <canvas id="heatmapChart" height="150"></canvas>
+                    </div>
+                </div>
+                
+                <!-- AI Assistant View -->
+                <div id="view-ai-assistant" class="view-content hidden">
+                    <div class="max-w-3xl mx-auto">
+                        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white mb-6">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-robot text-3xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold">AI Flow Assistant</h3>
+                                    <p class="opacity-80">Powered by Hugging Face API</p>
+                                </div>
+                            </div>
+                            <p class="text-lg opacity-90">Describe what you want to automate in plain English, and I'll help you build the flow.</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">What would you like to automate?</label>
+                            <textarea id="ai-prompt" rows="4" placeholder="Example: Send me a Slack message every morning at 9 AM with the weather forecast..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"></textarea>
+                            <button onclick="generateWithAI()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition">
+                                <i class="fas fa-magic"></i>
+                                Generate Flow
+                            </button>
+                        </div>
+                        
+                        <div id="ai-result" class="hidden bg-white rounded-2xl p-6 border border-gray-200">
+                            <h4 class="text-lg font-bold text-gray-900 mb-4">
+                                <i class="fas fa-sparkles text-purple-500 mr-2"></i>AI Suggested Flow
+                            </h4>
+                            <div id="ai-flow-preview" class="space-y-3">
+                                <!-- AI generated flow will appear here -->
+                            </div>
+                            <button onclick="useAIFlow()" class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold">
+                                <i class="fas fa-check mr-2"></i>Use This Flow
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <p>&copy; 2023 FlowMate Automation Inc. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="hover:text-white"><i class="fab fa-github"></i></a>
+        </main>
+    </div>
+    
+    <!-- Trigger Modal -->
+    <div id="trigger-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal('trigger-modal')"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-lg slide-in">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900">Select Trigger</h3>
+                <p class="text-gray-500 text-sm">Decide when your automation should start.</p>
+            </div>
+            <div class="p-6 space-y-3">
+                <button onclick="selectTrigger('manual', 'Manual Trigger', 'fas fa-hand-pointer')" class="trigger-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-hand-pointer text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Manual Trigger</p>
+                        <p class="text-sm text-gray-500">Run when you click the "Run" button</p>
+                    </div>
+                </button>
+                <button onclick="selectTrigger('scheduled', 'Scheduled (Daily)', 'fas fa-clock')" class="trigger-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-clock text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Scheduled (Time-based)</p>
+                        <p class="text-sm text-gray-500">Run daily, hourly, or at specific times</p>
+                    </div>
+                </button>
+                <button onclick="selectTrigger('event', 'Event Trigger', 'fas fa-bolt')" class="trigger-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-bolt text-amber-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Event Trigger</p>
+                        <p class="text-sm text-gray-500">Run when a specific event occurs</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Condition Modal -->
+    <div id="condition-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal('condition-modal')"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-lg slide-in">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900">Add Condition</h3>
+                <p class="text-gray-500 text-sm">Add a condition to decide what happens next.</p>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">If this value...</label>
+                        <input type="text" id="condition-value" placeholder="e.g., status, count, temperature" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Is...</label>
+                        <select id="condition-operator" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                            <option value="equals">Equal to</option>
+                            <option value="not_equals">Not equal to</option>
+                            <option value="greater">Greater than</option>
+                            <option value="less">Less than</option>
+                            <option value="contains">Contains</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">This value...</label>
+                        <input type="text" id="condition-compare" placeholder="e.g., active, 100, sunny" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button onclick="saveCondition()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition">Save Condition</button>
+                    <button onclick="skipCondition()" class="px-6 py-3 border border-gray-300 rounded-xl font-semibold hover:bg-gray-50 transition">Skip</button>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+    
+    <!-- Action Modal -->
+    <div id="action-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal('action-modal')"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-lg slide-in">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900">Select Action</h3>
+                <p class="text-gray-500 text-sm">Choose what action should happen automatically.</p>
+            </div>
+            <div class="p-6 space-y-3 max-h-96 overflow-y-auto">
+                <button onclick="selectAction('send_email', 'Send Email', 'fas fa-envelope')" class="action-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-envelope text-red-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Send Email</p>
+                        <p class="text-sm text-gray-500">Send an automated email notification</p>
+                    </div>
+                </button>
+                <button onclick="selectAction('slack_message', 'Send Slack Message', 'fab fa-slack')" class="action-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-slack text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Send Slack Message</p>
+                        <p class="text-sm text-gray-500">Post a message to a Slack channel</p>
+                    </div>
+                </button>
+                <button onclick="selectAction('create_task', 'Create Task', 'fas fa-tasks')" class="action-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-tasks text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Create Task</p>
+                        <p class="text-sm text-gray-500">Create a new task in your task manager</p>
+                    </div>
+                </button>
+                <button onclick="selectAction('http_request', 'HTTP Request', 'fas fa-globe')" class="action-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-globe text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">HTTP Request</p>
+                        <p class="text-sm text-gray-500">Call an external API or webhook</p>
+                    </div>
+                </button>
+                <button onclick="selectAction('log_data', 'Log Data', 'fas fa-database')" class="action-option w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4 transition">
+                    <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-database text-gray-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Log Data</p>
+                        <p class="text-sm text-gray-500">Save data to the execution log</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl hidden z-50 flex items-center gap-3">
+        <i id="toast-icon" class="fas fa-check-circle text-green-400"></i>
+        <span id="toast-message">Action completed successfully!</span>
+    </div>
 
-    <!-- JavaScript for Chart.js and Logic -->
+    <!-- JavaScript Application Logic -->
     <script>
-        // Initialize Workflow Chart using Chart.js
-        const ctx = document.getElementById('workflowChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
-                datasets: [{
-                    label: 'Successful Executions',
-                    data: [120, 95, 450, 820, 760, 540, 210],
-                    borderColor: '#3b82f6', // Blue-500
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }, {
-                    label: 'Failed Executions',
-                    data: [2, 1, 5, 8, 4, 3, 2],
-                    borderColor: '#ef4444', // Red-500
-                    borderDash: [5, 5],
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0,0,0,0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
+        // ==========================================
+        // FLOWMATE APPLICATION STATE
+        // ==========================================
+        let appState = {
+            flows: JSON.parse(localStorage.getItem('flowmate_flows')) || [],
+            history: JSON.parse(localStorage.getItem('flowmate_history')) || [],
+            currentFlow: {
+                name: '',
+                trigger: null,
+                condition: null,
+                action: null
             }
+        };
+
+        // ==========================================
+        // VIEW MANAGEMENT
+        // ==========================================
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            
+            // Show selected view
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            
+            // Update sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active', 'bg-indigo-600', 'text-white');
+                item.classList.add('text-gray-700');
+            });
+            const activeItem = document.querySelector(`[data-view="${viewName}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+                activeItem.classList.remove('text-gray-700');
+            }
+            
+            // Update header
+            const titles = {
+                'dashboard': ['Dashboard', 'Welcome back! Here\'s your automation overview.'],
+                'my-flows': ['My Flows', 'Manage and monitor your automated workflows.'],
+                'create-flow': ['Create Flow', 'Build a new automated workflow using When → If → Do.'],
+                'history': ['Run History', 'Track when your flows run and what they do.'],
+                'analytics': ['Analytics', 'Insights and metrics for your automations.'],
+                'ai-assistant': ['AI Assistant', 'Generate flows using natural language.']
+            };
+            document.getElementById('page-title').textContent = titles[viewName]?.[0] || 'FlowMate';
+            document.getElementById('page-subtitle').textContent = titles[viewName]?.[1] || '';
+            
+            // Refresh data for specific views
+            if (viewName === 'dashboard') renderDashboard();
+            if (viewName === 'my-flows') renderFlows();
+            if (viewName === 'history') renderHistory();
+            if (viewName === 'analytics') renderAnalytics();
+            if (viewName === 'create-flow') resetFlowBuilder();
+        }
+
+        // ==========================================
+        // MODAL MANAGEMENT
+        // ==========================================
+        function openTriggerModal() {
+            document.getElementById('trigger-modal').classList.remove('hidden');
+        }
+        
+        function openConditionModal() {
+            document.getElementById('condition-modal').classList.remove('hidden');
+        }
+        
+        function openActionModal() {
+            document.getElementById('action-modal').classList.remove('hidden');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // ==========================================
+        // FLOW BUILDER FUNCTIONS
+        // ==========================================
+        function selectTrigger(type, name, icon) {
+            appState.currentFlow.trigger = { type, name, icon };
+            document.getElementById('trigger-display').textContent = name;
+            closeModal('trigger-modal');
+            showToast('Trigger selected: ' + name, 'success');
+        }
+        
+        function saveCondition() {
+            const value = document.getElementById('condition-value').value;
+            const operator = document.getElementById('condition-operator').value;
+            const compare = document.getElementById('condition-compare').value;
+            
+            if (value && compare) {
+                const operatorText = {
+                    'equals': 'equals',
+                    'not_equals': 'does not equal',
+                    'greater': 'is greater than',
+                    'less': 'is less than',
+                    'contains': 'contains'
+                };
+                const conditionText = `${value} ${operatorText[operator]} ${compare}`;
+                appState.currentFlow.condition = { value, operator, compare, text: conditionText };
+                document.getElementById('condition-display').textContent = conditionText;
+                closeModal('condition-modal');
+                showToast('Condition added!', 'success');
+            }
+        }
+        
+        function skipCondition() {
+            appState.currentFlow.condition = null;
+            document.getElementById('condition-display').textContent = 'No condition (always run)';
+            closeModal('condition-modal');
+        }
+        
+        function selectAction(type, name, icon) {
+            appState.currentFlow.action = { type, name, icon };
+            document.getElementById('action-display').textContent = name;
+            closeModal('action-modal');
+            showToast('Action selected: ' + name, 'success');
+        }
+        
+        function resetFlowBuilder() {
+            appState.currentFlow = { name: '', trigger: null, condition: null, action: null };
+            document.getElementById('flow-name').value = '';
+            document.getElementById('trigger-display').textContent = 'Click to select trigger...';
+            document.getElementById('condition-display').textContent = 'Add a condition...';
+            document.getElementById('action-display').textContent = 'Click to select action...';
+        }
+        
+        function saveFlow() {
+            const name = document.getElementById('flow-name').value.trim();
+            
+            if (!name) {
+                showToast('Please enter a flow name', 'error');
+                return;
+            }
+            if (!appState.currentFlow.trigger) {
+                showToast('Please select a trigger', 'error');
+                return;
+            }
+            if (!appState.currentFlow.action) {
+                showToast('Please select an action', 'error');
+                return;
+            }
+            
+            const flow = {
+                id: Date.now(),
+                name: name,
+                trigger: appState.currentFlow.trigger,
+                condition: appState.currentFlow.condition,
+                action: appState.currentFlow.action,
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                runs: 0,
+                lastRun: null
+            };
+            
+            appState.flows.push(flow);
+            saveToStorage();
+            showToast('Flow saved successfully!', 'success');
+            showView('my-flows');
+        }
+        
+        function testFlow() {
+            if (!appState.currentFlow.trigger || !appState.currentFlow.action) {
+                showToast('Please complete the flow before testing', 'error');
+                return;
+            }
+            
+            showToast('Running test...', 'info');
+            
+            setTimeout(() => {
+                const success = Math.random() > 0.2;
+                addToHistory({
+                    flowName: document.getElementById('flow-name').value || 'Untitled Flow',
+                    trigger: appState.currentFlow.trigger.name,
+                    action: appState.currentFlow.action.name,
+                    status: success ? 'success' : 'failed',
+                    timestamp: new Date().toISOString()
+                });
+                showToast(success ? 'Test completed successfully!' : 'Test failed - check logs', success ? 'success' : 'error');
+            }, 1500);
+        }
+
+        // ==========================================
+        // RENDER FUNCTIONS
+        // ==========================================
+        function renderDashboard() {
+            const totalFlows = appState.flows.length;
+            const activeFlows = appState.flows.filter(f => f.status === 'active').length;
+            const successfulRuns = appState.history.filter(h => h.status === 'success').length;
+            const failedRuns = appState.history.filter(h => h.status === 'failed').length;
+            
+            document.getElementById('stat-total-flows').textContent = totalFlows;
+            document.getElementById('stat-successful').textContent = successfulRuns;
+            document.getElementById('stat-failed').textContent = failedRuns;
+            document.getElementById('stat-active').textContent = activeFlows;
+            
+            // Render recent activity
+            const activityContainer = document.getElementById('recent-activity');
+            if (appState.history.length > 0) {
+                const recentItems = appState.history.slice(-5).reverse();
+                activityContainer.innerHTML = recentItems.map(item => `
+                    <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 ${item.status === 'success' ? 'bg-green-100' : 'bg-red-100'} rounded-full flex items-center justify-center">
+                                <i class="fas ${item.status === 'success' ? 'fa-check text-green-600' : 'fa-times text-red-600'}"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">${item.flowName}</p>
+                                <p class="text-sm text-gray-500">${item.action}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs px-2 py-1 rounded-full ${item.status === 'success' ? 'status-success' : 'status-failed'}">${item.status}</span>
+                            <p class="text-xs text-gray-400 mt-1">${formatTime(item.timestamp)}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            renderDashboardCharts();
+        }
+        
+        function renderFlows() {
+            const container = document.getElementById('flows-grid');
+            const emptyState = document.getElementById('empty-flows');
+            
+            if (appState.flows.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            container.innerHTML = appState.flows.map(flow => `
+                <div class="flow-card bg-white rounded-2xl p-6 border-2 border-gray-200 hover:shadow-lg transition">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-project-diagram text-indigo-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded-full ${flow.status === 'active' ? 'status-success' : 'bg-gray-100 text-gray-600'}">
+                            ${flow.status}
+                        </span>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">${flow.name}</h4>
+                    <p class="text-sm text-gray-500 mb-4">
+                        <i class="${flow.trigger.icon} mr-1"></i>${flow.trigger.name} → ${flow.action.name}
+                    </p>
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-xs text-gray-400">${flow.runs} runs</span>
+                        <div class="flex gap-2">
+                            <button onclick="runFlow(${flow.id})" class="w-8 h-8 bg-green-100 hover:bg-green-200 rounded-lg flex items-center justify-center text-green-600 transition">
+                                <i class="fas fa-play text-xs"></i>
+                            </button>
+                            <button onclick="deleteFlow(${flow.id})" class="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-lg flex items-center justify-center text-red-600 transition">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            
+            if (appState.history.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-clock text-4xl mb-3 text-gray-300"></i>
+                        <p>No execution history yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appState.history.slice().reverse().map(item => `
+                <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 ${item.status === 'success' ? 'bg-green-100' : 'bg-red-100'} rounded-full flex items-center justify-center">
+                            <i class="fas ${item.status === 'success' ? 'fa-check text-green-600' : 'fa-times text-red-600'}"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">${item.flowName}</p>
+                            <p class="text-sm text-gray-500"><i class="fas fa-bolt mr-1 text-amber-500"></i>${item.trigger} → <i class="fas fa-play mr-1 text-green-500"></i>${item.action}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs px-3 py-1 rounded-full font-medium ${item.status === 'success' ? 'status-success' : 'status-failed'}">${item.status.toUpperCase()}</span>
+                        <p class="text-xs text-gray-400 mt-1">${formatTime(item.timestamp)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // FLOW OPERATIONS
+        // ==========================================
+        function runFlow(flowId) {
+            const flow = appState.flows.find(f => f.id === flowId);
+            if (!flow) return;
+            
+            showToast(`Running "${flow.name}"...`, 'info');
+            
+            setTimeout(() => {
+                const success = Math.random() > 0.15;
+                flow.runs++;
+                flow.lastRun = new Date().toISOString();
+                
+                addToHistory({
+                    flowName: flow.name,
+                    trigger: flow.trigger.name,
+                    action: flow.action.name,
+                    status: success ? 'success' : 'failed',
+                    timestamp: new Date().toISOString()
+                });
+                
+                saveToStorage();
+                renderFlows();
+                showToast(success ? `"${flow.name}" completed!` : `"${flow.name}" failed`, success ? 'success' : 'error');
+            }, 1000 + Math.random() * 1000);
+        }
+        
+        function deleteFlow(flowId) {
+            if (confirm('Are you sure you want to delete this flow?')) {
+                appState.flows = appState.flows.filter(f => f.id !== flowId);
+                saveToStorage();
+                renderFlows();
+                showToast('Flow deleted', 'success');
+            }
+        }
+        
+        function clearHistory() {
+            if (confirm('Clear all execution history?')) {
+                appState.history = [];
+                saveToStorage();
+                renderHistory();
+                showToast('History cleared', 'success');
+            }
+        }
+
+        // ==========================================
+        // AI ASSISTANT
+        // ==========================================
+        function generateWithAI() {
+            const prompt = document.getElementById('ai-prompt').value.trim();
+            if (!prompt) {
+                showToast('Please describe what you want to automate', 'error');
+                return;
+            }
+            
+            showToast('AI is analyzing your request...', 'info');
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                const suggestions = analyzePrompt(prompt);
+                displayAIResult(suggestions);
+            }, 2000);
+        }
+        
+        function analyzePrompt(prompt) {
+            const lower = prompt.toLowerCase();
+            let trigger = { type: 'manual', name: 'Manual Trigger', icon: 'fas fa-hand-pointer' };
+            let condition = null;
+            let action = { type: 'log_data', name: 'Log Data', icon: 'fas fa-database' };
+            
+            // Detect trigger
+            if (lower.includes('every day') || lower.includes('daily') || lower.includes('morning') || lower.includes('night')) {
+                trigger = { type: 'scheduled', name: 'Scheduled (Daily)', icon: 'fas fa-clock' };
+            } else if (lower.includes('every hour') || lower.includes('hourly')) {
+                trigger = { type: 'scheduled', name: 'Scheduled (Hourly)', icon: 'fas fa-clock' };
+            } else if (lower.includes('when') || lower.includes('whenever') || lower.includes('if')) {
+                trigger = { type: 'event', name: 'Event Trigger', icon: 'fas fa-bolt' };
+            }
+            
+            // Detect action
+            if (lower.includes('email') || lower.includes('mail')) {
+                action = { type: 'send_email', name: 'Send Email', icon: 'fas fa-envelope' };
+            } else if (lower.includes('slack') || lower.includes('message') || lower.includes('notify')) {
+                action = { type: 'slack_message', name: 'Send Slack Message', icon: 'fab fa-slack' };
+            } else if (lower.includes('task') || lower.includes('todo') || lower.includes('create')) {
+                action = { type: 'create_task', name: 'Create Task', icon: 'fas fa-tasks' };
+            } else if (lower.includes('api') || lower.includes('webhook') || lower.includes('http')) {
+                action = { type: 'http_request', name: 'HTTP Request', icon: 'fas fa-globe' };
+            }
+            
+            // Detect condition
+            if (lower.includes('if') || lower.includes('when') || lower.includes('only')) {
+                condition = { text: 'Condition detected from prompt', value: 'status', operator: 'equals', compare: 'active' };
+            }
+            
+            return { trigger, condition, action };
+        }
+        
+        function displayAIResult(suggestions) {
+            const container = document.getElementById('ai-flow-preview');
+            container.innerHTML = `
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <i class="${suggestions.trigger.icon} text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-blue-600 font-bold uppercase">When</p>
+                        <p class="font-medium text-gray-900">${suggestions.trigger.name}</p>
+                    </div>
+                </div>
+                ${suggestions.condition ? `
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-code-branch text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-amber-600 font-bold uppercase">If</p>
+                        <p class="font-medium text-gray-900">${suggestions.condition.text}</p>
+                    </div>
+                </div>
+                ` : ''}
+                <div class="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                        <i class="${suggestions.action.icon} text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-green-600 font-bold uppercase">Do</p>
+                        <p class="font-medium text-gray-900">${suggestions.action.name}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('ai-result').classList.remove('hidden');
+            
+            // Store for later use
+            appState.aiSuggestion = suggestions;
+            showToast('AI generated a flow suggestion!', 'success');
+        }
+        
+        function useAIFlow() {
+            if (appState.aiSuggestion) {
+                appState.currentFlow = {
+                    name: '',
+                    trigger: appState.aiSuggestion.trigger,
+                    condition: appState.aiSuggestion.condition,
+                    action: appState.aiSuggestion.action
+                };
+                showView('create-flow');
+                
+                // Update displays
+                document.getElementById('trigger-display').textContent = appState.currentFlow.trigger.name;
+                document.getElementById('condition-display').textContent = appState.currentFlow.condition?.text || 'No condition';
+                document.getElementById('action-display').textContent = appState.currentFlow.action.name;
+                
+                showToast('Flow loaded! Give it a name and save.', 'success');
+            }
+        }
+
+        // ==========================================
+        // CHARTS
+        // ==========================================
+        function renderDashboardCharts() {
+            // Execution Chart
+            const execCtx = document.getElementById('executionChart');
+            if (execCtx) {
+                new Chart(execCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Successful',
+                            data: [12, 19, 15, 25, 22, 10, 8],
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Failed',
+                            data: [2, 1, 3, 2, 1, 0, 1],
+                            borderColor: '#ef4444',
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // Status Chart
+            const statusCtx = document.getElementById('statusChart');
+            if (statusCtx) {
+                const success = appState.history.filter(h => h.status === 'success').length || 1;
+                const failed = appState.history.filter(h => h.status === 'failed').length || 0;
+                
+                new Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Successful', 'Failed'],
+                        datasets: [{
+                            data: [success, failed],
+                            backgroundColor: ['#22c55e', '#ef4444'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } },
+                        cutout: '70%'
+                    }
+                });
+            }
+        }
+        
+        function renderAnalytics() {
+            // Weekly Chart
+            const weeklyCtx = document.getElementById('weeklyChart');
+            if (weeklyCtx) {
+                new Chart(weeklyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Executions',
+                            data: [65, 89, 120, 95],
+                            backgroundColor: '#6366f1',
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // Success Rate Chart
+            const successCtx = document.getElementById('successRateChart');
+            if (successCtx) {
+                new Chart(successCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: appState.flows.slice(0, 5).map(f => f.name) || ['No flows'],
+                        datasets: [{
+                            label: 'Success Rate %',
+                            data: appState.flows.slice(0, 5).map(() => Math.floor(85 + Math.random() * 15)) || [0],
+                            backgroundColor: '#22c55e',
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // Heatmap Chart
+            const heatCtx = document.getElementById('heatmapChart');
+            if (heatCtx) {
+                new Chart(heatCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm'],
+                        datasets: [{
+                            label: 'Executions',
+                            data: [5, 2, 8, 45, 38, 52, 28, 15],
+                            backgroundColor: '#8b5cf6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ==========================================
+        // UTILITIES
+        // ==========================================
+        function addToHistory(entry) {
+            appState.history.push(entry);
+            saveToStorage();
+        }
+        
+        function saveToStorage() {
+            localStorage.setItem('flowmate_flows', JSON.stringify(appState.flows));
+            localStorage.setItem('flowmate_history', JSON.stringify(appState.history));
+        }
+        
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString();
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-message');
+            
+            msg.textContent = message;
+            icon.className = 'fas ' + (type === 'success' ? 'fa-check-circle text-green-400' : type === 'error' ? 'fa-times-circle text-red-400' : 'fa-info-circle text-blue-400');
+            
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            showView('dashboard');
         });
     </script>
 </body>
