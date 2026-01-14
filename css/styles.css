@@ -1,0 +1,148 @@
+/* ==========================================
+   FLOWMATE - MAIN STYLESHEET
+   ========================================== */
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Global Styles */
+* { 
+    font-family: 'Inter', sans-serif; 
+    box-sizing: border-box;
+}
+
+body { 
+    background: #f3f4f6; 
+    margin: 0;
+    padding: 0;
+}
+
+/* ==========================================
+   SIDEBAR STYLES
+   ========================================== */
+.sidebar { 
+    width: 260px; 
+    transition: width 0.3s; 
+}
+
+.sidebar-item:hover { 
+    background: #e0e7ff; 
+}
+
+.sidebar-item.active { 
+    background: #4f46e5; 
+    color: white; 
+}
+
+/* ==========================================
+   FLOW BUILDER NODES
+   ========================================== */
+.flow-node { 
+    transition: all 0.2s; 
+    cursor: pointer;
+}
+
+.flow-node:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+}
+
+/* Connectors (Lines between nodes) */
+.connector { 
+    width: 3px; 
+    height: 40px; 
+    background: linear-gradient(to bottom, #6366f1, #8b5cf6); 
+    margin: 0 auto; 
+    position: relative;
+}
+
+.connector::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #8b5cf6;
+}
+
+/* ==========================================
+   MODAL STYLES
+   ========================================== */
+.modal-overlay {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* ==========================================
+   FLOW CARDS
+   ========================================== */
+.flow-card:hover { 
+    border-color: #6366f1; 
+}
+
+/* ==========================================
+   STATUS BADGES
+   ========================================== */
+.status-success { 
+    background: #dcfce7; 
+    color: #166534; 
+}
+
+.status-failed { 
+    background: #fee2e2; 
+    color: #991b1b; 
+}
+
+.status-running { 
+    background: #dbeafe; 
+    color: #1e40af; 
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.pulse-dot { 
+    animation: pulse-dot 2s infinite; 
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.slide-in { 
+    animation: slideIn 0.3s ease-out; 
+}
+
+/* ==========================================
+   UTILITY CLASSES
+   ========================================== */
+.hidden { 
+    display: none !important; 
+}
+
+/* ==========================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+    }
+    
+    .sidebar span {
+        display: none;
+    }
+}

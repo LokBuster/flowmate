@@ -1,321 +1,209 @@
 /**
- * FlowMate Backend Server
- * Node.js + Express API for workflow automation
- * 
- * Technologies: Node.js, Express, MongoDB
+ * FlowMate Backend Server (Minimal)
+ * - Stores workflows and executions in-memory (optionally persists later)
+ * - Runs workflows by calling the Python Engine over HTTP
+ *
+ * Why minimal?
+ * - 1-week deadline
+ * - Avoid DB setup friction
+ * - Still "real" because it executes real integrations via python/engine.py
+ *
+ * Start:
+ *   cd backend
+ *   npm install
+ *   npm start
+ *
+ * Requires Python engine running:
+ *   cd python
+ *   pip install -r requirements.txt
+ *   python engine.py
  */
 
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// NOTE (Windows fix): using 127.0.0.1 avoids IPv6/localhost resolution issues where Node may prefer ::1
+// while the Python engine is bound to IPv4 (0.0.0.0).
+const PY_ENGINE_URL = process.env.PY_ENGINE_URL || 'http://127.0.0.1:5001';
 
-// ==========================================
-// MIDDLEWARE
-// ==========================================
 app.use(cors());
 app.use(express.json());
-app.use(express.static('../')); // Serve frontend
 
-// ==========================================
-// MONGODB CONNECTION
-// ==========================================
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/flowmate';
+// ------------------------------
+// In-memory store (minimal)
+// ------------------------------
+const store = {
+  workflows: [],
+  executions: []
+};
 
-mongoose.connect(MONGODB_URI)
-    .then(() => console.log('✅ Connected to MongoDB'))
-    .catch(err => console.error('❌ MongoDB connection error:', err));
+const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
-// ==========================================
-// SCHEMAS & MODELS
-// ==========================================
+// ------------------------------
+// Helpers
+// ------------------------------
+async function callPythonEngine(flow) {
+  const res = await fetch(`${PY_ENGINE_URL}/execute`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ flow })
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const msg = data?.error || data?.message || 'Python engine error';
+    throw new Error(msg);
+  }
+  return data;
+}
 
-// Workflow Schema
-const workflowSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    trigger: {
-        type: { type: String, required: true },
-        name: String,
-        icon: String,
-        config: Object
-    },
-    condition: {
-        value: String,
-        operator: String,
-        compare: String,
-        text: String
-    },
-    action: {
-        type: { type: String, required: true },
-        name: String,
-        icon: String,
-        config: Object
-    },
-    status: { type: String, default: 'active' },
-    runs: { type: Number, default: 0 },
-    lastRun: Date,
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+// ------------------------------
+// API
+// ------------------------------
+app.get('/api/health', async (req, res) => {
+  let engine = 'unknown';
+  try {
+    const r = await fetch(`${PY_ENGINE_URL}/health`);
+    engine = r.ok ? 'connected' : 'disconnected';
+  } catch {
+    engine = 'disconnected';
+  }
+
+  res.json({
+    status: 'OK',
+    service: 'FlowMate API',
+    timestamp: new Date().toISOString(),
+    pythonEngine: engine
+  });
 });
 
-const Workflow = mongoose.model('Workflow', workflowSchema);
-
-// Execution History Schema
-const executionSchema = new mongoose.Schema({
-    workflowId: { type: mongoose.Schema.Types.ObjectId, ref: 'Workflow' },
-    flowName: String,
-    trigger: String,
-    action: String,
-    status: { type: String, enum: ['success', 'failed', 'running'] },
-    message: String,
-    duration: Number,
-    timestamp: { type: Date, default: Date.now }
+// Workflows
+app.get('/api/workflows', (req, res) => {
+  res.json({ success: true, data: store.workflows.slice().reverse() });
 });
 
-const Execution = mongoose.model('Execution', executionSchema);
+app.post('/api/workflows', (req, res) => {
+  const flow = req.body;
+  if (!flow?.name || !flow?.trigger || !flow?.action) {
+    return res.status(400).json({ success: false, error: 'Missing required fields (name, trigger, action)' });
+  }
 
-// ==========================================
-// API ROUTES - WORKFLOWS
-// ==========================================
+  const created = {
+    ...flow,
+    id: uid(),
+    status: flow.status || 'active',
+    runs: flow.runs || 0,
+    lastRun: flow.lastRun || null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
 
-// GET all workflows
-app.get('/api/workflows', async (req, res) => {
-    try {
-        const workflows = await Workflow.find().sort({ createdAt: -1 });
-        res.json({ success: true, data: workflows });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
+  store.workflows.push(created);
+  res.status(201).json({ success: true, data: created });
 });
 
-// GET single workflow
-app.get('/api/workflows/:id', async (req, res) => {
-    try {
-        const workflow = await Workflow.findById(req.params.id);
-        if (!workflow) {
-            return res.status(404).json({ success: false, error: 'Workflow not found' });
-        }
-        res.json({ success: true, data: workflow });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
+app.delete('/api/workflows/:id', (req, res) => {
+  const before = store.workflows.length;
+  store.workflows = store.workflows.filter(w => w.id !== req.params.id);
+  const after = store.workflows.length;
+  if (after === before) return res.status(404).json({ success: false, error: 'Workflow not found' });
+  res.json({ success: true, message: 'Workflow deleted' });
 });
 
-// CREATE workflow
-app.post('/api/workflows', async (req, res) => {
-    try {
-        const workflow = new Workflow(req.body);
-        await workflow.save();
-        res.status(201).json({ success: true, data: workflow });
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message });
-    }
-});
-
-// UPDATE workflow
-app.put('/api/workflows/:id', async (req, res) => {
-    try {
-        const workflow = await Workflow.findByIdAndUpdate(
-            req.params.id,
-            { ...req.body, updatedAt: Date.now() },
-            { new: true }
-        );
-        if (!workflow) {
-            return res.status(404).json({ success: false, error: 'Workflow not found' });
-        }
-        res.json({ success: true, data: workflow });
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message });
-    }
-});
-
-// DELETE workflow
-app.delete('/api/workflows/:id', async (req, res) => {
-    try {
-        const workflow = await Workflow.findByIdAndDelete(req.params.id);
-        if (!workflow) {
-            return res.status(404).json({ success: false, error: 'Workflow not found' });
-        }
-        res.json({ success: true, message: 'Workflow deleted' });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// RUN workflow
+// Run workflow (real execution via python engine)
 app.post('/api/workflows/:id/run', async (req, res) => {
-    try {
-        const workflow = await Workflow.findById(req.params.id);
-        if (!workflow) {
-            return res.status(404).json({ success: false, error: 'Workflow not found' });
-        }
+  const wf = store.workflows.find(w => w.id === req.params.id);
+  if (!wf) return res.status(404).json({ success: false, error: 'Workflow not found' });
 
-        // Simulate workflow execution
-        const startTime = Date.now();
-        const success = Math.random() > 0.15; // 85% success rate simulation
-        const duration = Math.floor(500 + Math.random() * 2000);
-
-        // Update workflow stats
-        workflow.runs += 1;
-        workflow.lastRun = new Date();
-        await workflow.save();
-
-        // Log execution
-        const execution = new Execution({
-            workflowId: workflow._id,
-            flowName: workflow.name,
-            trigger: workflow.trigger.name,
-            action: workflow.action.name,
-            status: success ? 'success' : 'failed',
-            message: success ? 'Workflow executed successfully' : 'Workflow execution failed',
-            duration: duration
-        });
-        await execution.save();
-
-        // Simulate delay
-        setTimeout(() => {
-            res.json({
-                success: true,
-                data: {
-                    workflowId: workflow._id,
-                    status: success ? 'success' : 'failed',
-                    duration: duration,
-                    message: success ? 'Workflow executed successfully' : 'Workflow execution failed'
-                }
-            });
-        }, duration);
-
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ==========================================
-// API ROUTES - EXECUTIONS (HISTORY)
-// ==========================================
-
-// GET all executions
-app.get('/api/executions', async (req, res) => {
-    try {
-        const limit = parseInt(req.query.limit) || 50;
-        const executions = await Execution.find()
-            .sort({ timestamp: -1 })
-            .limit(limit);
-        res.json({ success: true, data: executions });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// GET executions for specific workflow
-app.get('/api/workflows/:id/executions', async (req, res) => {
-    try {
-        const executions = await Execution.find({ workflowId: req.params.id })
-            .sort({ timestamp: -1 });
-        res.json({ success: true, data: executions });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// DELETE all executions (clear history)
-app.delete('/api/executions', async (req, res) => {
-    try {
-        await Execution.deleteMany({});
-        res.json({ success: true, message: 'Execution history cleared' });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ==========================================
-// API ROUTES - ANALYTICS
-// ==========================================
-
-// GET dashboard stats
-app.get('/api/analytics/stats', async (req, res) => {
-    try {
-        const totalFlows = await Workflow.countDocuments();
-        const activeFlows = await Workflow.countDocuments({ status: 'active' });
-        const successfulRuns = await Execution.countDocuments({ status: 'success' });
-        const failedRuns = await Execution.countDocuments({ status: 'failed' });
-
-        res.json({
-            success: true,
-            data: {
-                totalFlows,
-                activeFlows,
-                successfulRuns,
-                failedRuns,
-                successRate: successfulRuns + failedRuns > 0 
-                    ? ((successfulRuns / (successfulRuns + failedRuns)) * 100).toFixed(1)
-                    : 100
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// GET weekly execution data
-app.get('/api/analytics/weekly', async (req, res) => {
-    try {
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-        const executions = await Execution.find({
-            timestamp: { $gte: oneWeekAgo }
-        });
-
-        // Group by day
-        const dailyData = {};
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        
-        executions.forEach(exec => {
-            const day = days[new Date(exec.timestamp).getDay()];
-            if (!dailyData[day]) {
-                dailyData[day] = { success: 0, failed: 0 };
-            }
-            if (exec.status === 'success') {
-                dailyData[day].success++;
-            } else {
-                dailyData[day].failed++;
-            }
-        });
-
-        res.json({ success: true, data: dailyData });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ==========================================
-// HEALTH CHECK
-// ==========================================
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'OK',
-        service: 'FlowMate API',
-        timestamp: new Date().toISOString(),
-        mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  const start = Date.now();
+  try {
+    const result = await callPythonEngine({
+      name: wf.name,
+      type: wf.type || 'custom',
+      config: wf.config || {},
+      trigger: wf.trigger,
+      condition: wf.condition,
+      action: wf.action
     });
+
+    wf.runs = (wf.runs || 0) + 1;
+    wf.lastRun = new Date().toISOString();
+    wf.updatedAt = new Date().toISOString();
+
+    const duration = Date.now() - start;
+
+    const execution = {
+      id: uid(),
+      workflowId: wf.id,
+      flowName: wf.name,
+      trigger: wf.trigger?.name || 'Trigger',
+      action: wf.action?.name || 'Action',
+      status: result.status || 'success',
+      message: result.message || 'Executed',
+      duration,
+      timestamp: new Date().toISOString(),
+      engineResult: result.result || null
+    };
+
+    store.executions.push(execution);
+
+    return res.json({ success: true, data: execution });
+  } catch (e) {
+    const duration = Date.now() - start;
+    const execution = {
+      id: uid(),
+      workflowId: wf.id,
+      flowName: wf.name,
+      trigger: wf.trigger?.name || 'Trigger',
+      action: wf.action?.name || 'Action',
+      status: 'failed',
+      message: e.message || 'Execution failed',
+      duration,
+      timestamp: new Date().toISOString(),
+      engineResult: null
+    };
+    store.executions.push(execution);
+    return res.status(500).json({ success: false, data: execution, error: execution.message });
+  }
 });
 
-// ==========================================
-// START SERVER
-// ==========================================
+// Executions
+app.get('/api/executions', (req, res) => {
+  const limit = parseInt(req.query.limit || '50', 10);
+  res.json({ success: true, data: store.executions.slice().reverse().slice(0, limit) });
+});
+
+app.delete('/api/executions', (req, res) => {
+  store.executions = [];
+  res.json({ success: true, message: 'Execution history cleared' });
+});
+
+// Analytics
+app.get('/api/analytics/stats', (req, res) => {
+  const totalFlows = store.workflows.length;
+  const activeFlows = store.workflows.filter(w => w.status === 'active').length;
+  const successfulRuns = store.executions.filter(e => e.status === 'success').length;
+  const failedRuns = store.executions.filter(e => e.status === 'failed').length;
+  const totalRuns = successfulRuns + failedRuns;
+
+  res.json({
+    success: true,
+    data: {
+      totalFlows,
+      activeFlows,
+      successfulRuns,
+      failedRuns,
+      successRate: totalRuns ? ((successfulRuns / totalRuns) * 100).toFixed(1) : '100.0'
+    }
+  });
+});
+
+// ------------------------------
+// Start
+// ------------------------------
 app.listen(PORT, () => {
-    console.log(`
-    ╔═══════════════════════════════════════════╗
-    ║         FlowMate Backend Server           ║
-    ╠═══════════════════════════════════════════╣
-    ║  🚀 Server running on port ${PORT}            ║
-    ║  📦 MongoDB: ${MONGODB_URI}                   
-    ║  🔗 API: http://localhost:${PORT}/api         ║
-    ╚═══════════════════════════════════════════╝
-    `);
+  console.log(`\nFlowMate API running on http://localhost:${PORT}`);
+  console.log(`Python Engine expected at ${PY_ENGINE_URL}`);
+  console.log(`Health check: http://localhost:${PORT}/api/health\n`);
 });
-
-module.exports = app;
