@@ -1,257 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlowMate | When → If → Do Automation</title>
-
-  <!-- Tailwind CSS -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowMate | Simple Automation</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-  <!-- External CSS -->
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-gray-100">
-  <div id="app" class="flex h-screen">
+<body class="bg-sand text-ink">
 
-    <!-- Sidebar -->
-    <aside class="sidebar bg-white border-r border-gray-200 flex flex-col">
-      <div class="p-5 border-b border-gray-200">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-            <i class="fas fa-bolt text-white text-lg"></i>
-          </div>
-          <div>
-            <h1 class="text-xl font-bold text-gray-900">FlowMate</h1>
-            <p class="text-xs text-gray-500">When → If → Do</p>
-          </div>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-biscuit rounded-3xl shadow-xl p-10 w-full max-w-md border border-stone-300">
+      <div class="text-center mb-10">
+        <div class="w-16 h-16 bg-terracotta rounded-2xl flex items-center justify-center mx-auto mb-5">
+          <i class="bi bi-diagram-3 text-white text-3xl"></i>
         </div>
+        <h1 class="font-display text-4xl text-ink uppercase">FlowMate</h1>
+        <p class="text-gray-600 mt-2 font-medium">Simplify. Automate. Repeat.</p>
       </div>
+      <div class="space-y-4">
+        <input type="text" id="login-user" placeholder="Username" class="w-full px-5 py-4 bg-sand border border-stone-300 rounded-xl focus:outline-none focus:border-terracotta transition">
+        <input type="password" id="login-pass" placeholder="Password" class="w-full px-5 py-4 bg-sand border border-stone-300 rounded-xl focus:outline-none focus:border-terracotta transition">
+        <button onclick="doLogin()" class="w-full bg-terracotta hover:bg-amber-800 text-white py-4 rounded-xl font-bold uppercase tracking-wider transition">Login</button>
+      </div>
+    </div>
+  </div>
 
-      <nav class="flex-1 p-4">
-        <ul class="space-y-2">
-          <li><button onclick="showView('dashboard')" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left" data-view="dashboard"><i class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span></button></li>
-          <li><button onclick="showView('my-flows')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="my-flows"><i class="fas fa-project-diagram w-5"></i><span class="font-medium">My Flows</span></button></li>
-          <li><button onclick="showView('create-flow')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="create-flow"><i class="fas fa-plus-circle w-5"></i><span class="font-medium">Create Flow</span></button></li>
-          <li><button onclick="showView('history')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="history"><i class="fas fa-history w-5"></i><span class="font-medium">Run History</span></button></li>
-          <li><button onclick="showView('analytics')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="analytics"><i class="fas fa-chart-bar w-5"></i><span class="font-medium">Analytics</span></button></li>
-        </ul>
-
-        <div class="mt-8 pt-6 border-t border-gray-200">
-          <p class="text-xs text-gray-400 uppercase font-semibold mb-3 px-4">AI Features</p>
-          <button onclick="showView('ai-assistant')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-700" data-view="ai-assistant"><i class="fas fa-robot w-5 text-purple-500"></i><span class="font-medium">AI Assistant</span><span class="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">New</span></button>
-        </div>
+  <!-- MAIN APP -->
+  <div id="main-app" class="hidden flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-biscuit border-r border-stone-300 flex flex-col">
+      <div class="p-8">
+        <h1 class="font-display text-2xl text-terracotta uppercase">FlowMate</h1>
+      </div>
+      <nav class="flex-1 px-4 space-y-2">
+        <button onclick="showView('dashboard')" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium" data-view="dashboard"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></button>
+        <button onclick="showView('my-flows')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium" data-view="my-flows"><i class="bi bi-collection"></i><span>My Flows</span></button>
+        <button onclick="showView('create-flow')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium" data-view="create-flow"><i class="bi bi-plus-circle"></i><span>Create Flow</span></button>
+        <button onclick="showView('history')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium" data-view="history"><i class="bi bi-clock-history"></i><span>History</span></button>
+        <button onclick="showView('analytics')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium" data-view="analytics"><i class="bi bi-bar-chart"></i><span>Analytics</span></button>
+        <button onclick="showView('ai-assistant')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium" data-view="ai-assistant"><i class="bi bi-stars"></i><span>AI Assistant</span></button>
       </nav>
-
-      <div class="p-4 border-t border-gray-200">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
-          <div class="flex-1"><p class="text-sm font-medium text-gray-900">Demo User</p><p class="text-xs text-gray-500">Minimal Build</p></div>
-        </div>
+      <div class="p-6 border-t border-stone-300">
+        <button onclick="doLogout()" class="flex items-center gap-2 text-stone-600 hover:text-terracotta transition"><i class="bi bi-box-arrow-left"></i> Logout</button>
       </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-auto">
-      <header class="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-10">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 id="page-title" class="text-2xl font-bold text-gray-900">Dashboard</h2>
-            <p id="page-subtitle" class="text-gray-500 text-sm">Welcome back! Here's your automation overview.</p>
-          </div>
-          <button onclick="showView('create-flow')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition shadow-lg shadow-indigo-200"><i class="fas fa-plus"></i><span>New Flow</span></button>
+    <!-- Content -->
+    <main class="flex-1 overflow-auto p-10 bg-sand">
+      <header class="flex justify-between items-center mb-10">
+        <div>
+          <h2 id="page-title" class="font-display text-3xl uppercase">Dashboard</h2>
+          <p id="page-subtitle" class="text-stone-600">Overview of your activity</p>
         </div>
+        <button onclick="showView('create-flow')" class="bg-terracotta text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wider hover:shadow-lg transition">New Flow</button>
       </header>
 
-      <div class="p-8">
-        <!-- Dashboard -->
-        <div id="view-dashboard" class="view-content">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center"><i class="fas fa-project-diagram text-indigo-600 text-xl"></i></div><span class="text-green-500 text-sm font-medium">Live</span></div><p class="text-3xl font-bold text-gray-900" id="stat-total-flows">0</p><p class="text-gray-500 text-sm">Total Flows</p></div>
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-check-circle text-green-600 text-xl"></i></div><span class="text-green-500 text-sm font-medium">OK</span></div><p class="text-3xl font-bold text-gray-900" id="stat-successful">0</p><p class="text-gray-500 text-sm">Successful Runs</p></div>
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center"><i class="fas fa-times-circle text-red-600 text-xl"></i></div><span class="text-red-500 text-sm font-medium">Watch</span></div><p class="text-3xl font-bold text-gray-900" id="stat-failed">0</p><p class="text-gray-500 text-sm">Failed Runs</p></div>
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-purple-600 text-xl"></i></div><span class="pulse-dot w-2 h-2 bg-green-500 rounded-full"></span></div><p class="text-3xl font-bold text-gray-900" id="stat-active">0</p><p class="text-gray-500 text-sm">Active Flows</p></div>
-          </div>
+      <div class="view-content" id="view-dashboard">
+        <div class="grid grid-cols-4 gap-6 mb-10">
+          <div class="bg-biscuit p-6 rounded-2xl border border-stone-300"><p class="text-sm font-bold uppercase text-stone-500">Total</p><p class="text-3xl font-display" id="stat-flows">0</p></div>
+          <div class="bg-biscuit p-6 rounded-2xl border border-stone-300"><p class="text-sm font-bold uppercase text-stone-500">Success</p><p class="text-3xl font-display text-green-700" id="stat-success">0</p></div>
+          <div class="bg-biscuit p-6 rounded-2xl border border-stone-300"><p class="text-sm font-bold uppercase text-stone-500">Failed</p><p class="text-3xl font-display text-red-700" id="stat-failed">0</p></div>
+          <div class="bg-biscuit p-6 rounded-2xl border border-stone-300"><p class="text-sm font-bold uppercase text-stone-500">Active</p><p class="text-3xl font-display text-terracotta" id="stat-active">0</p></div>
+        </div>
+        <div class="grid grid-cols-2 gap-8">
+          <div class="bg-biscuit p-8 rounded-3xl border border-stone-300"><h3 class="font-bold mb-6 text-xl">Execution Trend</h3><canvas id="trendChart"></canvas></div>
+          <div class="bg-biscuit p-8 rounded-3xl border border-stone-300"><h3 class="font-bold mb-6 text-xl">Recent Logs</h3><div id="recent-logs" class="space-y-3"></div></div>
+        </div>
+      </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><h3 class="text-lg font-bold text-gray-900 mb-4">Execution Trends</h3><canvas id="executionChart" height="200"></canvas></div>
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><h3 class="text-lg font-bold text-gray-900 mb-4">Flow Status</h3><canvas id="statusChart" height="200"></canvas></div>
-          </div>
+      <div class="view-content hidden" id="view-my-flows">
+        <div id="flows-grid" class="grid grid-cols-3 gap-6"></div>
+      </div>
 
-          <div class="bg-white rounded-2xl border border-gray-200">
-            <div class="p-6 border-b border-gray-200"><h3 class="text-lg font-bold text-gray-900">Recent Activity</h3></div>
-            <div id="recent-activity" class="divide-y divide-gray-100"></div>
+      <div class="view-content hidden" id="view-create-flow">
+        <div class="max-w-xl mx-auto">
+          <div class="bg-biscuit p-6 rounded-2xl border border-stone-300 mb-8 text-center">
+            <input type="text" id="flow-name" placeholder="Name your automation..." class="bg-transparent text-center font-display text-2xl w-full focus:outline-none">
+          </div>
+          <div class="flex flex-col items-center space-y-4">
+            <div class="w-full bg-biscuit p-6 rounded-2xl border border-stone-300 cursor-pointer text-center hover:bg-stone-200 transition" onclick="openModal('trigger')">
+              <span class="text-xs uppercase font-bold text-stone-500 block mb-1">When</span>
+              <p id="trigger-display" class="font-bold text-lg">Select Trigger...</p>
+            </div>
+            <div class="w-1 h-8 bg-stone-300"></div>
+            <div class="w-full bg-sand p-6 rounded-2xl border-2 border-dashed border-stone-300 cursor-pointer text-center hover:bg-stone-100 transition" onclick="openModal('condition')">
+              <span class="text-xs uppercase font-bold text-stone-500 block mb-1">If (Optional)</span>
+              <p id="condition-display" class="font-bold text-lg">Add Logic...</p>
+            </div>
+            <div class="w-1 h-8 bg-stone-300"></div>
+            <div class="w-full bg-biscuit p-6 rounded-2xl border border-stone-300 cursor-pointer text-center hover:bg-stone-200 transition" onclick="openModal('action')">
+              <span class="text-xs uppercase font-bold text-stone-500 block mb-1">Do</span>
+              <p id="action-display" class="font-bold text-lg">Select Action...</p>
+            </div>
+            <button onclick="saveFlow()" class="mt-8 bg-terracotta text-white px-10 py-4 rounded-xl font-bold uppercase tracking-wider hover:shadow-lg transition">Save Workflow</button>
           </div>
         </div>
+      </div>
 
-        <!-- My Flows -->
-        <div id="view-my-flows" class="view-content hidden">
-          <div id="flows-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-          <div id="empty-flows" class="text-center py-16">
-            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fas fa-folder-open text-3xl text-gray-400"></i></div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">No flows yet</h3>
-            <p class="text-gray-500 mb-6">Create your first automated workflow.</p>
-            <button onclick="showView('create-flow')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold"><i class="fas fa-plus mr-2"></i>Create Flow</button>
-          </div>
+      <div class="view-content hidden" id="view-history">
+        <div class="bg-biscuit rounded-3xl border border-stone-300 overflow-hidden" id="history-list"></div>
+      </div>
+
+      <div class="view-content hidden" id="view-analytics">
+        <div class="grid grid-cols-2 gap-8">
+          <div class="bg-biscuit p-8 rounded-3xl border border-stone-300 text-center"><h3 class="font-bold mb-6">Success Rate</h3><canvas id="pieChart"></canvas></div>
+          <div class="bg-biscuit p-8 rounded-3xl border border-stone-300 text-center"><h3 class="font-bold mb-6">Execution Load</h3><canvas id="barChart"></canvas></div>
         </div>
+      </div>
 
-        <!-- Create Flow -->
-        <div id="view-create-flow" class="view-content hidden">
-          <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Flow Name</label>
-              <input type="text" id="flow-name" placeholder="e.g., Daily Report Automation" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg" />
-              <p class="text-xs text-gray-500 mt-2">Build a simple flow: WHEN → IF → DO</p>
-            </div>
-
-            <div class="bg-white rounded-2xl p-8 border border-gray-200 mb-6">
-              <h3 class="text-lg font-bold text-gray-900 mb-6 text-center">Build Your Flow</h3>
-              <div class="flex flex-col items-center">
-                <div class="flow-node w-full max-w-md bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-5 shadow-lg" onclick="openTriggerModal()">
-                  <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-bolt text-2xl"></i></div>
-                    <div class="flex-1"><p class="text-xs uppercase font-bold opacity-80">When</p><p id="trigger-display" class="text-lg font-semibold">Click to select trigger...</p></div>
-                    <i class="fas fa-chevron-right opacity-60"></i>
-                  </div>
-                </div>
-
-                <div class="connector"></div>
-
-                <div class="flow-node w-full max-w-md bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl p-5 shadow-lg" onclick="openConditionModal()">
-                  <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-code-branch text-2xl"></i></div>
-                    <div class="flex-1"><p class="text-xs uppercase font-bold opacity-80">If (Optional)</p><p id="condition-display" class="text-lg font-semibold">Add a condition...</p></div>
-                    <i class="fas fa-chevron-right opacity-60"></i>
-                  </div>
-                </div>
-
-                <div class="connector"></div>
-
-                <div class="flow-node w-full max-w-md bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-5 shadow-lg" onclick="openActionModal()">
-                  <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-play text-2xl"></i></div>
-                    <div class="flex-1"><p class="text-xs uppercase font-bold opacity-80">Do</p><p id="action-display" class="text-lg font-semibold">Click to select action...</p></div>
-                    <i class="fas fa-chevron-right opacity-60"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex justify-center gap-4">
-              <button onclick="saveFlow()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-indigo-200 flex items-center gap-2"><i class="fas fa-save"></i>Save Flow</button>
-              <button onclick="showToast('Use Run button in My Flows to execute via backend.', 'info')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-2"><i class="fas fa-play"></i>Test Info</button>
-            </div>
-          </div>
+      <div class="view-content hidden" id="view-ai-assistant">
+        <div class="max-w-2xl mx-auto bg-biscuit p-10 rounded-3xl border border-stone-300">
+          <h3 class="font-display text-2xl mb-4">AI Flow Generator</h3>
+          <p class="text-stone-600 mb-6 italic">"Help me track emails from my boss about urgent tasks..."</p>
+          <textarea id="ai-prompt" rows="4" class="w-full p-4 bg-sand border border-stone-300 rounded-xl mb-4 focus:outline-none focus:border-terracotta" placeholder="Describe your workflow..."></textarea>
+          <button onclick="generateAI()" class="w-full bg-terracotta text-white py-4 rounded-xl font-bold uppercase tracking-wider">Generate Workflow</button>
+          <div id="ai-result" class="mt-8 hidden p-6 bg-sand border border-stone-300 rounded-xl"></div>
         </div>
-
-        <!-- History -->
-        <div id="view-history" class="view-content hidden">
-          <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h3 class="text-lg font-bold text-gray-900">Execution History</h3>
-              <button onclick="clearHistory()" class="text-red-500 hover:text-red-600 text-sm font-medium"><i class="fas fa-trash mr-1"></i>Clear All</button>
-            </div>
-            <div id="history-list" class="divide-y divide-gray-100"></div>
-          </div>
-        </div>
-
-        <!-- Analytics -->
-        <div id="view-analytics" class="view-content hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><h3 class="text-lg font-bold text-gray-900 mb-4">Weekly Performance</h3><canvas id="weeklyChart" height="250"></canvas></div>
-            <div class="bg-white rounded-2xl p-6 border border-gray-200"><h3 class="text-lg font-bold text-gray-900 mb-4">Success Rate by Flow</h3><canvas id="successRateChart" height="250"></canvas></div>
-          </div>
-          <div class="bg-white rounded-2xl p-6 border border-gray-200"><h3 class="text-lg font-bold text-gray-900 mb-4">Hourly Execution Heatmap</h3><canvas id="heatmapChart" height="150"></canvas></div>
-        </div>
-
-        <!-- AI Assistant -->
-        <div id="view-ai-assistant" class="view-content hidden">
-          <div class="max-w-3xl mx-auto">
-            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white mb-6">
-              <div class="flex items-center gap-4 mb-4">
-                <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center"><i class="fas fa-robot text-3xl"></i></div>
-                <div><h3 class="text-2xl font-bold">AI Flow Assistant</h3><p class="opacity-80">Minimal (local intent) • Extensible to Hugging Face</p></div>
-              </div>
-              <p class="text-lg opacity-90">Describe what you want to automate in plain English.</p>
-            </div>
-
-            <div class="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">What would you like to automate?</label>
-              <textarea id="ai-prompt" rows="4" placeholder="Example: Send me a Slack message every morning at 9 AM..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"></textarea>
-              <button onclick="generateWithAI()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2"><i class="fas fa-magic"></i>Generate Flow</button>
-            </div>
-
-            <div id="ai-result" class="hidden bg-white rounded-2xl p-6 border border-gray-200">
-              <h4 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-sparkles text-purple-500 mr-2"></i>AI Suggested Flow</h4>
-              <div id="ai-flow-preview" class="space-y-3"></div>
-              <button onclick="useAIFlow()" class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold"><i class="fas fa-check mr-2"></i>Use This Flow</button>
-            </div>
-          </div>
-        </div>
-
       </div>
     </main>
   </div>
 
-  <!-- Trigger Modal -->
-  <div id="trigger-modal" class="fixed inset-0 z-50 hidden">
-    <div class="modal-overlay absolute inset-0" onclick="closeModal('trigger-modal')"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-lg slide-in">
-      <div class="p-6 border-b border-gray-200"><h3 class="text-xl font-bold text-gray-900">Select Trigger</h3><p class="text-gray-500 text-sm">Decide when your automation should start.</p></div>
-      <div class="p-6 space-y-3">
-        <button onclick="selectTrigger('manual', 'Manual Trigger', 'fas fa-hand-pointer')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-hand-pointer text-blue-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">Manual Trigger</p><p class="text-sm text-gray-500">Run when you click "Run"</p></div></button>
-        <button onclick="selectTrigger('scheduled', 'Scheduled (Hourly)', 'fas fa-clock')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-purple-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">Scheduled Trigger</p><p class="text-sm text-gray-500">Run hourly / daily</p></div></button>
-        <button onclick="selectTrigger('event', 'Event Trigger', 'fas fa-bolt')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center"><i class="fas fa-bolt text-amber-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">Event Trigger</p><p class="text-sm text-gray-500">Run when an event occurs</p></div></button>
+  <!-- MODALS -->
+  <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-6">
+    <div class="bg-sand rounded-3xl shadow-2xl w-full max-w-md border border-stone-300 overflow-hidden">
+      <div class="p-6 bg-biscuit border-b border-stone-300 flex justify-between items-center">
+        <h3 id="modal-title" class="font-display uppercase text-lg">Select Item</h3>
+        <button onclick="closeModal()" class="text-2xl">&times;</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Condition Modal -->
-  <div id="condition-modal" class="fixed inset-0 z-50 hidden">
-    <div class="modal-overlay absolute inset-0" onclick="closeModal('condition-modal')"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-lg slide-in">
-      <div class="p-6 border-b border-gray-200"><h3 class="text-xl font-bold text-gray-900">Add Condition</h3><p class="text-gray-500 text-sm">Add a condition to decide what happens next.</p></div>
-      <div class="p-6">
-        <div class="space-y-4">
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">If this value...</label><input type="text" id="condition-value" placeholder="e.g., status, count" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" /></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Is...</label><select id="condition-operator" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"><option value="equals">Equal to</option><option value="not_equals">Not equal to</option><option value="greater">Greater than</option><option value="less">Less than</option><option value="contains">Contains</option></select></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">This value...</label><input type="text" id="condition-compare" placeholder="e.g., active, 100" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" /></div>
-        </div>
-        <div class="flex gap-3 mt-6">
-          <button onclick="saveCondition()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold">Save Condition</button>
-          <button onclick="skipCondition()" class="px-6 py-3 border border-gray-300 rounded-xl font-semibold hover:bg-gray-50">Skip</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Action Modal -->
-  <div id="action-modal" class="fixed inset-0 z-50 hidden">
-    <div class="modal-overlay absolute inset-0" onclick="closeModal('action-modal')"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-lg slide-in">
-      <div class="p-6 border-b border-gray-200"><h3 class="text-xl font-bold text-gray-900">Select Action</h3><p class="text-gray-500 text-sm">Choose what action should happen automatically.</p></div>
-      <div class="p-6 space-y-3">
-        <button onclick="selectAction('send_email', 'Send Email', 'fas fa-envelope')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center"><i class="fas fa-envelope text-red-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">Send Email</p><p class="text-sm text-gray-500">Demo action</p></div></button>
-        <button onclick="selectAction('slack_message', 'Send Slack Message', 'fab fa-slack')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fab fa-slack text-purple-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">Send Slack Message</p><p class="text-sm text-gray-500">Demo action</p></div></button>
-        <button onclick="selectAction('create_task', 'Create Task', 'fas fa-tasks')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-tasks text-green-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">Create Task</p><p class="text-sm text-gray-500">Demo action</p></div></button>
-        <button onclick="selectAction('http_request', 'HTTP Request', 'fas fa-globe')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-globe text-blue-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">HTTP Request</p><p class="text-sm text-gray-500">Demo action</p></div></button>
-        <button onclick="selectAction('log_data', 'Log Data', 'fas fa-database')" class="w-full p-4 border border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-left flex items-center gap-4"><div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center"><i class="fas fa-database text-gray-600 text-xl"></i></div><div><p class="font-semibold text-gray-900">Log Data</p><p class="text-sm text-gray-500">Writes to history</p></div></button>
-      </div>
+      <div id="modal-content" class="p-6 space-y-2 max-h-96 overflow-auto"></div>
     </div>
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl hidden z-50 flex items-center gap-3">
-    <i id="toast-icon" class="fas fa-check-circle text-green-400"></i>
-    <span id="toast-message">Action completed!</span>
+  <div id="toast" class="hidden fixed bottom-10 right-10 bg-terracotta text-white px-8 py-4 rounded-xl shadow-2xl z-50 animate-bounce">
+    <p id="toast-msg" class="font-bold"></p>
   </div>
 
-  <!-- JS -->
-  <script src="js/charts.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,22 +1,6 @@
 """
 FlowMate Automation Engine (Minimal, Working)
-
-Goal:
-- Provide TWO real, working integrations for your FlowMate UI:
-  1) Email Monitor (practical demo): watches a local folder for "email" files
-  2) Notification/Data Puller: fetches non-sensitive notification-like data from a URL
-
-This keeps the project simple and reliable for a 1-week deadline.
-
-How it integrates:
-- The Node backend calls this engine via HTTP: POST http://localhost:5001/execute
-- The frontend calls the backend to run a flow.
-
-Run:
-  cd python
-  python engine.py
-
-Then the engine listens on: http://localhost:5001
+Python-based workflow execution and AI processing
 """
 
 from __future__ import annotations
@@ -52,7 +36,7 @@ def safe_json(body: bytes) -> Dict[str, Any]:
 # ------------------------------
 
 class RealIntegrations:
-    """Small, reliable "real" integrations for a capstone demo."""
+    """Small, reliable 'real' integrations for a capstone demo."""
 
     def email_folder_monitor(
         self,
@@ -62,22 +46,16 @@ class RealIntegrations:
     ) -> Dict[str, Any]:
         """
         Checks a folder for files that represent emails.
-
         File format (simple JSON recommended):
           {
             "from": "alerts@company.com",
             "subject": "Server Down",
             "body": "..."
           }
-
-        Also supports plain text files (subject=filename).
-
-        Returns:
-          { found: bool, matches: [...], checked: int }
+        Returns: { found: bool, matches: [...], checked: int }
         """
         os.makedirs(folder, exist_ok=True)
 
-        # Look for .json and .txt "emails"
         files = []
         for name in os.listdir(folder):
             if name.lower().endswith((".json", ".txt")):
@@ -106,7 +84,6 @@ class RealIntegrations:
                     item["subject"] = os.path.basename(path)
                     item["preview"] = (body[:120] + "...") if len(body) > 120 else body
 
-                # Apply filters
                 if match_from and item.get("from"):
                     if match_from.lower() not in str(item["from"]).lower():
                         continue
@@ -116,21 +93,17 @@ class RealIntegrations:
 
                 matches.append(item)
             except Exception:
-                # Ignore unreadable files
                 continue
 
         return {
             "found": len(matches) > 0,
             "checked": len(files),
-            "matches": matches[:5],  # limit for UI
+            "matches": matches[:5],
         }
 
     def pull_notification_data(self, url: str, json_path: Optional[str] = None) -> Dict[str, Any]:
         """
         Fetch non-sensitive notification-type data from a URL.
-
-        - If URL returns JSON, we optionally extract a nested value via json_path: "a.b.c"
-        - If URL returns text/HTML, we return a short preview.
         """
         r = requests.get(url, timeout=8)
         content_type = r.headers.get("content-type", "").lower()
@@ -205,8 +178,8 @@ class WorkflowExecutor:
         # FLOW 2: Notification/Data Pull
         if flow_type == "data_pull":
             config = flow.get("config", {})
-            url = config.get("url") or "https://api.github.com/repos/nodejs/node"  # safe, public
-            json_path = config.get("jsonPath")  # optional
+            url = config.get("url") or "https://api.github.com/repos/nodejs/node"
+            json_path = config.get("jsonPath")
 
             data = self.integrations.pull_notification_data(url, json_path=json_path)
             status = "success"

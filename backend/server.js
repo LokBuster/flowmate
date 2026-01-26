@@ -1,32 +1,11 @@
-/**
- * FlowMate Backend Server (Minimal)
- * - Stores workflows and executions in-memory (optionally persists later)
- * - Runs workflows by calling the Python Engine over HTTP
- *
- * Why minimal?
- * - 1-week deadline
- * - Avoid DB setup friction
- * - Still "real" because it executes real integrations via python/engine.py
- *
- * Start:
- *   cd backend
- *   npm install
- *   npm start
- *
- * Requires Python engine running:
- *   cd python
- *   pip install -r requirements.txt
- *   python engine.py
- */
+
 
 const express = require('express');
 const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-// NOTE (Windows fix): using 127.0.0.1 avoids IPv6/localhost resolution issues where Node may prefer ::1
-// while the Python engine is bound to IPv4 (0.0.0.0).
-const PY_ENGINE_URL = process.env.PY_ENGINE_URL || 'http://127.0.0.1:5001';
+const PY_ENGINE_URL = process.env.PY_ENGINE_URL || 'http://localhost:5001';
 
 app.use(cors());
 app.use(express.json());
