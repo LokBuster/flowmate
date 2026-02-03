@@ -1,6 +1,6 @@
 // FlowMate - Modern Sand & Biscuit App Logic
 const API = 'http://localhost:5001';
-const HF_TOKEN = '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';
+const HF_TOKEN = localStorage.getItem('HF_TOKEN') || 'demo-token';
 const HF_MODEL = 'facebook/bart-large-mnli';
 
 let state = {
